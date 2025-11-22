@@ -6,6 +6,11 @@ const nextConfig = {
     unoptimized: false,
   },
   trailingSlash: true,
+  webpack: (config) => {
+    config.resolve.alias['backend'] = false;
+    config.resolve.alias['backend/*'] = false;
+    return config;
+  },
 };
 
 module.exports = nextConfig;

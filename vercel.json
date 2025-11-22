@@ -1,0 +1,7 @@
+{
+  "ignoreCommand": "echo 'Skipping backend build'",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/" }
+  ]
+}
+
