@@ -1,0 +1,477 @@
+[
+  {
+    "name": "POST /api/delivery/login - Delivery Boy Login",
+    "method": "POST",
+    "url": "http://localhost:4000/api/delivery/login",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "phone": "9876543211",
+      "fcmToken": "fcm_token_here_for_push_notifications_optional"
+    },
+    "description": "Login delivery boy by phone number. Optionally update FCM token for push notifications. No OTP required for MVP.",
+    "successResponse": {
+      "status": 200,
+      "body": {
+        "success": true,
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+        "delivery": {
+          "id": "aa0e8400-e29b-41d4-a716-446655440005",
+          "name": "Rajesh Kumar",
+          "phone": "9876543211",
+          "vehicleNumber": "MH-01-AB-1234",
+          "fcmToken": "fcm_token_here_for_push_notifications_optional",
+          "isActive": true
+        }
+      }
+    },
+    "failureResponse": {
+      "status": 404,
+      "body": {
+        "error": true,
+        "message": "Delivery boy not found"
+      }
+    }
+  },
+  {
+    "name": "POST /api/delivery/login - Without FCM Token",
+    "method": "POST",
+    "url": "http://localhost:4000/api/delivery/login",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "phone": "9876543211"
+    },
+    "description": "Login delivery boy without FCM token. FCM token is optional.",
+    "successResponse": {
+      "status": 200,
+      "body": {
+        "success": true,
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+        "delivery": {
+          "id": "aa0e8400-e29b-41d4-a716-446655440005",
+          "name": "Rajesh Kumar",
+          "phone": "9876543211",
+          "vehicleNumber": "MH-01-AB-1234",
+          "fcmToken": null,
+          "isActive": true
+        }
+      }
+    },
+    "failureResponse": {
+      "status": 400,
+      "body": {
+        "error": true,
+        "message": "Phone number is required"
+      }
+    }
+  },
+  {
+    "name": "GET /api/delivery/orders - Get Assigned Orders",
+    "method": "GET",
+    "url": "http://localhost:4000/api/delivery/orders",
+    "headers": {
+      "Authorization": "Bearer YOUR_DELIVERY_JWT_TOKEN",
+      "Content-Type": "application/json"
+    },
+    "description": "Get all orders assigned to the logged-in delivery boy. Returns orders with status 'confirmed', 'picked', or 'out_for_delivery'. Requires delivery authentication.",
+    "successResponse": {
+      "status": 200,
+      "body": {
+        "data": [
+          {
+            "id": "550e8400-e29b-41d4-a716-446655440000",
+            "orderNumber": "ORD-12345",
+            "status": "confirmed",
+            "totalAmount": 25000,
+            "deliveryFee": 5000,
+            "assignedDeliveryId": "aa0e8400-e29b-41d4-a716-446655440005",
+            "createdAt": "2024-01-15T10:30:00.000Z",
+            "updatedAt": "2024-01-15T10:30:00.000Z",
+            "items": [
+              {
+                "id": "880e8400-e29b-41d4-a716-446655440003",
+                "productId": "990e8400-e29b-41d4-a716-446655440004",
+                "qty": "2.5",
+                "unitPrice": 8000,
+                "subtotal": 20000,
+                "product": {
+                  "id": "990e8400-e29b-41d4-a716-446655440004",
+                  "name": "Fresh Tomatoes",
+                  "category": "Vegetables",
+                  "imageUrl": "https://example.com/tomatoes.jpg"
+                }
+              }
+            ],
+            "address": {
+              "id": "770e8400-e29b-41d4-a716-446655440002",
+              "label": "Home",
+              "fullAddress": "123 Main Street, Apartment 4B",
+              "city": "Mumbai",
+              "pincode": "400001",
+              "latitude": 19.0760,
+              "longitude": 72.8777,
+              "isDefault": true
+            },
+            "user": {
+              "id": "660e8400-e29b-41d4-a716-446655440001",
+              "name": "John Doe",
+              "phone": "9876543210",
+              "email": "john.doe@example.com"
+            }
+          },
+          {
+            "id": "550e8400-e29b-41d4-a716-446655440006",
+            "orderNumber": "ORD-12346",
+            "status": "out_for_delivery",
+            "totalAmount": 15000,
+            "deliveryFee": 5000,
+            "assignedDeliveryId": "aa0e8400-e29b-41d4-a716-446655440005",
+            "pickedAt": "2024-01-15T11:00:00.000Z",
+            "outForDeliveryAt": "2024-01-15T11:05:00.000Z",
+            "createdAt": "2024-01-15T09:00:00.000Z",
+            "updatedAt": "2024-01-15T11:05:00.000Z",
+            "items": [
+              {
+                "id": "880e8400-e29b-41d4-a716-446655440007",
+                "productId": "990e8400-e29b-41d4-a716-446655440008",
+                "qty": "1.0",
+                "unitPrice": 10000,
+                "subtotal": 10000,
+                "product": {
+                  "id": "990e8400-e29b-41d4-a716-446655440008",
+                  "name": "Organic Potatoes",
+                  "category": "Vegetables",
+                  "imageUrl": "https://example.com/potatoes.jpg"
+                }
+              }
+            ],
+            "address": {
+              "id": "770e8400-e29b-41d4-a716-446655440009",
+              "label": "Office",
+              "fullAddress": "456 Business Park, Floor 5",
+              "city": "Mumbai",
+              "pincode": "400002",
+              "latitude": 19.0820,
+              "longitude": 72.8827,
+              "isDefault": false
+            },
+            "user": {
+              "id": "660e8400-e29b-41d4-a716-446655440010",
+              "name": "Jane Smith",
+              "phone": "9876543212",
+              "email": "jane.smith@example.com"
+            }
+          }
+        ]
+      }
+    },
+    "failureResponse": {
+      "status": 401,
+      "body": {
+        "error": true,
+        "message": "No token"
+      }
+    }
+  },
+  {
+    "name": "GET /api/delivery/orders/:id - Get Order Details",
+    "method": "GET",
+    "url": "http://localhost:4000/api/delivery/orders/550e8400-e29b-41d4-a716-446655440000",
+    "headers": {
+      "Authorization": "Bearer YOUR_DELIVERY_JWT_TOKEN",
+      "Content-Type": "application/json"
+    },
+    "description": "Get detailed information about a specific order. Only returns orders assigned to the logged-in delivery boy. Requires delivery authentication.",
+    "successResponse": {
+      "status": 200,
+      "body": {
+        "id": "550e8400-e29b-41d4-a716-446655440000",
+        "orderNumber": "ORD-12345",
+        "status": "out_for_delivery",
+        "totalAmount": 25000,
+        "deliveryFee": 5000,
+        "paymentMethod": "online",
+        "assignedDeliveryId": "aa0e8400-e29b-41d4-a716-446655440005",
+        "pickedAt": "2024-01-15T11:00:00.000Z",
+        "outForDeliveryAt": "2024-01-15T11:05:00.000Z",
+        "deliveredAt": null,
+        "createdAt": "2024-01-15T10:30:00.000Z",
+        "updatedAt": "2024-01-15T11:05:00.000Z",
+        "items": [
+          {
+            "id": "880e8400-e29b-41d4-a716-446655440003",
+            "productId": "990e8400-e29b-41d4-a716-446655440004",
+            "qty": "2.5",
+            "unitPrice": 8000,
+            "subtotal": 20000,
+            "product": {
+              "id": "990e8400-e29b-41d4-a716-446655440004",
+              "name": "Fresh Tomatoes",
+              "category": "Vegetables",
+              "imageUrl": "https://example.com/tomatoes.jpg",
+              "price": 8000,
+              "unitType": "kg",
+              "unitValue": "1"
+            }
+          },
+          {
+            "id": "880e8400-e29b-41d4-a716-446655440011",
+            "productId": "990e8400-e29b-41d4-a716-446655440012",
+            "qty": "1.0",
+            "unitPrice": 5000,
+            "subtotal": 5000,
+            "product": {
+              "id": "990e8400-e29b-41d4-a716-446655440012",
+              "name": "Fresh Onions",
+              "category": "Vegetables",
+              "imageUrl": "https://example.com/onions.jpg",
+              "price": 5000,
+              "unitType": "kg",
+              "unitValue": "1"
+            }
+          }
+        ],
+        "address": {
+          "id": "770e8400-e29b-41d4-a716-446655440002",
+          "label": "Home",
+          "fullAddress": "123 Main Street, Apartment 4B",
+          "city": "Mumbai",
+          "pincode": "400001",
+          "latitude": 19.0760,
+          "longitude": 72.8777,
+          "isDefault": true
+        },
+        "user": {
+          "id": "660e8400-e29b-41d4-a716-446655440001",
+          "name": "John Doe",
+          "phone": "9876543210",
+          "email": "john.doe@example.com"
+        }
+      }
+    },
+    "failureResponse": {
+      "status": 403,
+      "body": {
+        "error": true,
+        "message": "Order is not assigned to you"
+      }
+    }
+  },
+  {
+    "name": "PATCH /api/delivery/orders/:id/status - Mark as Picked",
+    "method": "PATCH",
+    "url": "http://localhost:4000/api/delivery/orders/550e8400-e29b-41d4-a716-446655440000/status",
+    "headers": {
+      "Authorization": "Bearer YOUR_DELIVERY_JWT_TOKEN",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "status": "picked"
+    },
+    "description": "Update order status to 'picked'. Sets pickedAt timestamp. Allowed statuses: picked, out_for_delivery, delivered. Requires delivery authentication and order must be assigned to this delivery boy.",
+    "successResponse": {
+      "status": 200,
+      "body": {
+        "id": "550e8400-e29b-41d4-a716-446655440000",
+        "orderNumber": "ORD-12345",
+        "status": "out_for_delivery",
+        "assignedDeliveryId": "aa0e8400-e29b-41d4-a716-446655440005",
+        "pickedAt": "2024-01-15T11:00:00.000Z",
+        "outForDeliveryAt": "2024-01-15T11:00:00.000Z",
+        "deliveredAt": null,
+        "totalAmount": 25000,
+        "deliveryFee": 5000,
+        "paymentMethod": "online",
+        "createdAt": "2024-01-15T10:30:00.000Z",
+        "updatedAt": "2024-01-15T11:00:00.000Z",
+        "items": [
+          {
+            "id": "880e8400-e29b-41d4-a716-446655440003",
+            "productId": "990e8400-e29b-41d4-a716-446655440004",
+            "qty": "2.5",
+            "unitPrice": 8000,
+            "subtotal": 20000,
+            "product": {
+              "id": "990e8400-e29b-41d4-a716-446655440004",
+              "name": "Fresh Tomatoes",
+              "category": "Vegetables",
+              "imageUrl": "https://example.com/tomatoes.jpg",
+              "price": 8000,
+              "unitType": "kg",
+              "unitValue": "1"
+            }
+          }
+        ],
+        "address": {
+          "id": "770e8400-e29b-41d4-a716-446655440002",
+          "label": "Home",
+          "fullAddress": "123 Main Street, Apartment 4B",
+          "city": "Mumbai",
+          "pincode": "400001",
+          "latitude": 19.0760,
+          "longitude": 72.8777,
+          "isDefault": true
+        },
+        "user": {
+          "id": "660e8400-e29b-41d4-a716-446655440001",
+          "name": "John Doe",
+          "phone": "9876543210",
+          "email": "john.doe@example.com"
+        }
+      }
+    },
+    "failureResponse": {
+      "status": 400,
+      "body": {
+        "error": true,
+        "message": "Invalid status transition. Cannot change from \"confirmed\" to \"picked\". Valid transitions: out_for_delivery"
+      }
+    }
+  },
+  {
+    "name": "PATCH /api/delivery/orders/:id/status - Mark Out for Delivery",
+    "method": "PATCH",
+    "url": "http://localhost:4000/api/delivery/orders/550e8400-e29b-41d4-a716-446655440000/status",
+    "headers": {
+      "Authorization": "Bearer YOUR_DELIVERY_JWT_TOKEN",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "status": "out_for_delivery"
+    },
+    "description": "Update order status to 'out_for_delivery'. Sets outForDeliveryAt timestamp. Requires delivery authentication.",
+    "successResponse": {
+      "status": 200,
+      "body": {
+        "id": "550e8400-e29b-41d4-a716-446655440000",
+        "orderNumber": "ORD-12345",
+        "status": "out_for_delivery",
+        "assignedDeliveryId": "aa0e8400-e29b-41d4-a716-446655440005",
+        "pickedAt": "2024-01-15T11:00:00.000Z",
+        "outForDeliveryAt": "2024-01-15T11:05:00.000Z",
+        "deliveredAt": null,
+        "totalAmount": 25000,
+        "deliveryFee": 5000,
+        "paymentMethod": "online",
+        "createdAt": "2024-01-15T10:30:00.000Z",
+        "updatedAt": "2024-01-15T11:05:00.000Z",
+        "items": [
+          {
+            "id": "880e8400-e29b-41d4-a716-446655440003",
+            "productId": "990e8400-e29b-41d4-a716-446655440004",
+            "qty": "2.5",
+            "unitPrice": 8000,
+            "subtotal": 20000,
+            "product": {
+              "id": "990e8400-e29b-41d4-a716-446655440004",
+              "name": "Fresh Tomatoes",
+              "category": "Vegetables",
+              "imageUrl": "https://example.com/tomatoes.jpg",
+              "price": 8000,
+              "unitType": "kg",
+              "unitValue": "1"
+            }
+          }
+        ],
+        "address": {
+          "id": "770e8400-e29b-41d4-a716-446655440002",
+          "label": "Home",
+          "fullAddress": "123 Main Street, Apartment 4B",
+          "city": "Mumbai",
+          "pincode": "400001",
+          "latitude": 19.0760,
+          "longitude": 72.8777,
+          "isDefault": true
+        },
+        "user": {
+          "id": "660e8400-e29b-41d4-a716-446655440001",
+          "name": "John Doe",
+          "phone": "9876543210",
+          "email": "john.doe@example.com"
+        }
+      }
+    },
+    "failureResponse": {
+      "status": 403,
+      "body": {
+        "error": true,
+        "message": "Order is not assigned to you"
+      }
+    }
+  },
+  {
+    "name": "PATCH /api/delivery/orders/:id/status - Mark as Delivered",
+    "method": "PATCH",
+    "url": "http://localhost:4000/api/delivery/orders/550e8400-e29b-41d4-a716-446655440000/status",
+    "headers": {
+      "Authorization": "Bearer YOUR_DELIVERY_JWT_TOKEN",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "status": "delivered"
+    },
+    "description": "Mark order as delivered. Sets deliveredAt timestamp. Notifies customer. Requires delivery authentication.",
+    "successResponse": {
+      "status": 200,
+      "body": {
+        "id": "550e8400-e29b-41d4-a716-446655440000",
+        "orderNumber": "ORD-12345",
+        "status": "delivered",
+        "assignedDeliveryId": "aa0e8400-e29b-41d4-a716-446655440005",
+        "pickedAt": "2024-01-15T11:00:00.000Z",
+        "outForDeliveryAt": "2024-01-15T11:05:00.000Z",
+        "deliveredAt": "2024-01-15T11:30:00.000Z",
+        "totalAmount": 25000,
+        "deliveryFee": 5000,
+        "paymentMethod": "online",
+        "createdAt": "2024-01-15T10:30:00.000Z",
+        "updatedAt": "2024-01-15T11:30:00.000Z",
+        "items": [
+          {
+            "id": "880e8400-e29b-41d4-a716-446655440003",
+            "productId": "990e8400-e29b-41d4-a716-446655440004",
+            "qty": "2.5",
+            "unitPrice": 8000,
+            "subtotal": 20000,
+            "product": {
+              "id": "990e8400-e29b-41d4-a716-446655440004",
+              "name": "Fresh Tomatoes",
+              "category": "Vegetables",
+              "imageUrl": "https://example.com/tomatoes.jpg",
+              "price": 8000,
+              "unitType": "kg",
+              "unitValue": "1"
+            }
+          }
+        ],
+        "address": {
+          "id": "770e8400-e29b-41d4-a716-446655440005",
+          "label": "Home",
+          "fullAddress": "123 Main Street, Apartment 4B",
+          "city": "Mumbai",
+          "pincode": "400001",
+          "latitude": 19.0760,
+          "longitude": 72.8777,
+          "isDefault": true
+        },
+        "user": {
+          "id": "660e8400-e29b-41d4-a716-446655440001",
+          "name": "John Doe",
+          "phone": "9876543210",
+          "email": "john.doe@example.com"
+        }
+      }
+    },
+    "failureResponse": {
+      "status": 400,
+      "body": {
+        "error": true,
+        "message": "Invalid status transition. Cannot change from \"confirmed\" to \"delivered\". Valid transitions: out_for_delivery"
+      }
+    }
+  }
+]
+

@@ -1,0 +1,128 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  googleId      String    @unique
+  name          String
+  email         String    @unique
+  phone         String?   @unique
+  phoneVerified Boolean   @default(false)
+  profilePic    String?
+  fcmToken      String?   // FCM device token for push notifications
+  addresses     Address[]
+  orders        Order[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Address {
+  id          String   @id @default(uuid())
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
+  label       String?
+  latitude    Decimal
+  longitude   Decimal
+  fullAddress String
+  city        String?
+  pincode     String?
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  orders      Order[]
+}
+
+model Product {
+  id          String      @id @default(uuid())
+  name        String
+  description String?
+  category    String
+  price       Int         // paise
+  unitType    String
+  unitValue   Decimal
+  stockQty    Decimal
+  imageUrl    String?
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  orderItems  OrderItem[]
+}
+
+model Order {
+  id                  String        @id @default(uuid())
+  orderNumber         String        @unique
+  user                User          @relation(fields: [userId], references: [id])
+  userId              String
+  address             Address       @relation(fields: [addressId], references: [id])
+  addressId           String
+  totalAmount         Int
+  deliveryFee         Int
+  paymentMethod       String
+  status              String
+  assignedDeliveryId  String?
+  assignedDelivery    DeliveryBoy?  @relation(fields: [assignedDeliveryId], references: [id])
+  pickedAt            DateTime?     // Timestamp when order was picked up
+  outForDeliveryAt    DateTime?     // Timestamp when order went out for delivery
+  deliveredAt         DateTime?     // Timestamp when order was delivered
+  items               OrderItem[]
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+}
+
+model OrderItem {
+  id        String   @id @default(uuid())
+  order     Order    @relation(fields: [orderId], references: [id])
+  orderId   String
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  qty       Decimal
+  unitPrice Int
+  subtotal  Int
+}
+
+model DeliveryBoy {
+  id           String    @id @default(uuid())
+  name         String
+  phone        String    @unique
+  vehicleNumber String?
+  fcmToken     String?   // FCM device token for push notifications
+  isActive     Boolean   @default(true)
+  orders       Order[]   // Orders assigned to this delivery boy
+  createdAt    DateTime  @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  actorId   String?
+  actorRole String?
+  action    String
+  meta      Json?    // Additional metadata (orderId, deliveryBoyId, etc.)
+  createdAt DateTime @default(now())
+
+  @@index([actorId])
+  @@index([actorRole])
+  @@index([action])
+  @@index([createdAt])
+}
+
+model AdminUser {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  googleId  String   @unique
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+}
+
+model Setting {
+  id           String  @id @default(uuid())
+  deliveryFee  Int     @default(0)
+  minOrderValue Int    @default(0)
+  openFrom     String?
+  openTo       String?
+}
+

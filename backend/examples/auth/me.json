@@ -1,0 +1,32 @@
+{
+  "name": "Get Current User",
+  "description": "Get current authenticated user information using JWT token",
+  "method": "GET",
+  "url": "http://localhost:4000/api/auth/me",
+  "headers": {
+    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhYmMxMjMtNDU2Ny04OWVmLWFhYmMtY2RlZi0xMjM0NTY3ODkiLCJyb2xlIjoidXNlciIsImlhdCI6MTYzNTQzMjEwMCwiZXhwIjoxNjM2MDM2OTAwfQ.example_jwt_token",
+    "Content-Type": "application/json"
+  },
+  "body": null,
+  "successResponse": {
+    "status": 200,
+    "body": {
+      "user": {
+        "id": "abc123-4567-89ef-aabc-cdef-123456789",
+        "name": "John Doe",
+        "email": "user@example.com",
+        "phone": "1234567890",
+        "profilePic": "https://lh5.googleusercontent.com/a-/example",
+        "phoneVerified": true
+      }
+    }
+  },
+  "failureResponse": {
+    "status": 401,
+    "body": {
+      "error": true,
+      "message": "No token"
+    }
+  }
+}
+

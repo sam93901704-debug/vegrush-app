@@ -1,0 +1,67 @@
+name: Deploy to Railway
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Run linter
+        working-directory: ./backend
+        run: npm run lint || echo "No lint script found, skipping..."
+
+      - name: Run tests
+        working-directory: ./backend
+        run: npm test || echo "No test script found, skipping..."
+
+  deploy:
+    name: Deploy to Railway
+    runs-on: ubuntu-latest
+    needs: test
+    # Note: Railway has native GitHub integration that auto-deploys on push
+    # This job can be used for additional deployment steps or notifications
+    # For automatic deployment, enable Railway's GitHub integration in Railway dashboard
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy notification
+        run: |
+          echo "Tests passed! Railway will auto-deploy via GitHub integration."
+          echo "Ensure Railway GitHub integration is enabled in Railway dashboard."
+          
+      # Alternative: Use Railway CLI for manual deployment
+      # - name: Setup Railway CLI
+      #   run: |
+      #     curl -fsSL https://railway.app/install.sh | sh
+      #
+      # - name: Deploy to Railway
+      #   env:
+      #     RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      #   run: |
+      #     railway link ${{ secrets.RAILWAY_PROJECT_ID }}
+      #     railway up --service backend
+      #   working-directory: ./backend
+

@@ -1,0 +1,35 @@
+{
+  "name": "Update Phone",
+  "description": "Update user phone number. Must be authenticated as user.",
+  "method": "POST",
+  "url": "http://localhost:4000/api/user/phone",
+  "headers": {
+    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhYmMxMjMtNDU2Ny04OWVmLWFhYmMtY2RlZi0xMjM0NTY3ODkiLCJyb2xlIjoidXNlciIsImlhdCI6MTYzNTQzMjEwMCwiZXhwIjoxNjM2MDM2OTAwfQ.example_jwt_token",
+    "Content-Type": "application/json"
+  },
+  "body": {
+    "phone": "9876543210"
+  },
+  "successResponse": {
+    "status": 200,
+    "body": {
+      "id": "abc123-4567-89ef-aabc-cdef-123456789",
+      "googleId": "111111111111111111111",
+      "name": "John Doe",
+      "email": "user@example.com",
+      "phone": "9876543210",
+      "phoneVerified": false,
+      "profilePic": "https://lh5.googleusercontent.com/a-/example",
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2024-01-01T12:00:00.000Z"
+    }
+  },
+  "failureResponse": {
+    "status": 409,
+    "body": {
+      "error": true,
+      "message": "Phone already registered"
+    }
+  }
+}
+

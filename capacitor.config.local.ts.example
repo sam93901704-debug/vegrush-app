@@ -1,0 +1,23 @@
+import { CapacitorConfig } from '@capacitor/cli';
+
+/**
+ * Local Capacitor Configuration
+ * Copy this file to capacitor.config.local.ts and fill in your values
+ * This file should be added to .gitignore to avoid committing sensitive data
+ */
+const localConfig: Partial<CapacitorConfig> = {
+  server: {
+    url: 'http://localhost:3000', // For live reload during development
+  },
+  android: {
+    buildOptions: {
+      keystorePath: 'android/app/keystore/release.keystore',
+      keystoreAlias: 'your-keystore-alias',
+      keystorePassword: 'your-keystore-password',
+      keystoreAliasPassword: 'your-keystore-alias-password',
+    },
+  },
+};
+
+export default localConfig;
+

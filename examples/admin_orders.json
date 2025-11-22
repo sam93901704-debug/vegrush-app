@@ -1,0 +1,317 @@
+[
+  {
+    "name": "GET /api/admin/orders - List All Orders",
+    "method": "GET",
+    "url": "http://localhost:4000/api/admin/orders",
+    "headers": {
+      "Authorization": "Bearer YOUR_ADMIN_JWT_TOKEN",
+      "Content-Type": "application/json"
+    },
+    "queryParams": {
+      "page": "1",
+      "limit": "20",
+      "status": "pending",
+      "search": "ORD-12345"
+    },
+    "description": "Get list of orders with optional filters (status, search, pagination). Admin only.",
+    "successResponse": {
+      "status": 200,
+      "body": {
+        "data": [
+          {
+            "id": "550e8400-e29b-41d4-a716-446655440000",
+            "orderNumber": "ORD-12345",
+            "userId": "660e8400-e29b-41d4-a716-446655440001",
+            "addressId": "770e8400-e29b-41d4-a716-446655440002",
+            "totalAmount": 25000,
+            "deliveryFee": 5000,
+            "paymentMethod": "online",
+            "status": "pending",
+            "assignedDeliveryId": null,
+            "createdAt": "2024-01-15T10:30:00.000Z",
+            "updatedAt": "2024-01-15T10:30:00.000Z",
+            "items": [
+              {
+                "id": "880e8400-e29b-41d4-a716-446655440003",
+                "productId": "990e8400-e29b-41d4-a716-446655440004",
+                "qty": "2.5",
+                "unitPrice": 8000,
+                "subtotal": 20000,
+                "product": {
+                  "id": "990e8400-e29b-41d4-a716-446655440004",
+                  "name": "Fresh Tomatoes",
+                  "category": "Vegetables",
+                  "imageUrl": "https://example.com/tomatoes.jpg"
+                }
+              }
+            ],
+            "user": {
+              "id": "660e8400-e29b-41d4-a716-446655440001",
+              "name": "John Doe",
+              "phone": "9876543210"
+            },
+            "address": {
+              "id": "770e8400-e29b-41d4-a716-446655440002",
+              "fullAddress": "123 Main Street, Apartment 4B",
+              "city": "Mumbai",
+              "pincode": "400001"
+            },
+            "assignedDelivery": null
+          }
+        ],
+        "pagination": {
+          "page": 1,
+          "limit": 20,
+          "total": 1
+        }
+      }
+    },
+    "failureResponse": {
+      "status": 401,
+      "body": {
+        "error": true,
+        "message": "No token"
+      }
+    }
+  },
+  {
+    "name": "GET /api/admin/orders/:id - Get Order Details",
+    "method": "GET",
+    "url": "http://localhost:4000/api/admin/orders/550e8400-e29b-41d4-a716-446655440000",
+    "headers": {
+      "Authorization": "Bearer YOUR_ADMIN_JWT_TOKEN",
+      "Content-Type": "application/json"
+    },
+    "description": "Get detailed information about a specific order. Admin only.",
+    "successResponse": {
+      "status": 200,
+      "body": {
+        "id": "550e8400-e29b-41d4-a716-446655440000",
+        "orderNumber": "ORD-12345",
+        "userId": "660e8400-e29b-41d4-a716-446655440001",
+        "addressId": "770e8400-e29b-41d4-a716-446655440002",
+        "totalAmount": 25000,
+        "deliveryFee": 5000,
+        "paymentMethod": "online",
+        "status": "confirmed",
+        "assignedDeliveryId": "aa0e8400-e29b-41d4-a716-446655440005",
+        "pickedAt": null,
+        "outForDeliveryAt": null,
+        "deliveredAt": null,
+        "createdAt": "2024-01-15T10:30:00.000Z",
+        "updatedAt": "2024-01-15T10:35:00.000Z",
+        "items": [
+          {
+            "id": "880e8400-e29b-41d4-a716-446655440003",
+            "productId": "990e8400-e29b-41d4-a716-446655440004",
+            "qty": "2.5",
+            "unitPrice": 8000,
+            "subtotal": 20000,
+            "product": {
+              "id": "990e8400-e29b-41d4-a716-446655440004",
+              "name": "Fresh Tomatoes",
+              "category": "Vegetables",
+              "imageUrl": "https://example.com/tomatoes.jpg"
+            }
+          }
+        ],
+        "user": {
+          "id": "660e8400-e29b-41d4-a716-446655440001",
+          "name": "John Doe",
+          "phone": "9876543210",
+          "email": "john.doe@example.com"
+        },
+        "address": {
+          "id": "770e8400-e29b-41d4-a716-446655440002",
+          "label": "Home",
+          "fullAddress": "123 Main Street, Apartment 4B",
+          "city": "Mumbai",
+          "pincode": "400001",
+          "isDefault": true
+        },
+        "assignedDelivery": {
+          "id": "aa0e8400-e29b-41d4-a716-446655440005",
+          "name": "Rajesh Kumar",
+          "phone": "9876543211",
+          "vehicleNumber": "MH-01-AB-1234"
+        }
+      }
+    },
+    "failureResponse": {
+      "status": 404,
+      "body": {
+        "error": true,
+        "message": "Order not found"
+      }
+    }
+  },
+  {
+    "name": "POST /api/admin/orders/:id/assign - Assign Delivery Boy",
+    "method": "POST",
+    "url": "http://localhost:4000/api/admin/orders/550e8400-e29b-41d4-a716-446655440000/assign",
+    "headers": {
+      "Authorization": "Bearer YOUR_ADMIN_JWT_TOKEN",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "deliveryBoyId": "aa0e8400-e29b-41d4-a716-446655440005"
+    },
+    "description": "Assign a delivery boy to an order. Updates order status to 'out_for_delivery' and sends notification to delivery boy. Admin only.",
+    "successResponse": {
+      "status": 200,
+      "body": {
+        "id": "550e8400-e29b-41d4-a716-446655440000",
+        "orderNumber": "ORD-12345",
+        "status": "out_for_delivery",
+        "assignedDeliveryId": "aa0e8400-e29b-41d4-a716-446655440005",
+        "outForDeliveryAt": "2024-01-15T11:00:00.000Z",
+        "items": [
+          {
+            "id": "880e8400-e29b-41d4-a716-446655440003",
+            "productId": "990e8400-e29b-41d4-a716-446655440004",
+            "qty": "2.5",
+            "unitPrice": 8000,
+            "subtotal": 20000,
+            "product": {
+              "id": "990e8400-e29b-41d4-a716-446655440004",
+              "name": "Fresh Tomatoes",
+              "category": "Vegetables",
+              "imageUrl": "https://example.com/tomatoes.jpg"
+            }
+          }
+        ],
+        "user": {
+          "id": "660e8400-e29b-41d4-a716-446655440001",
+          "name": "John Doe",
+          "phone": "9876543210",
+          "email": "john.doe@example.com"
+        },
+        "address": {
+          "id": "770e8400-e29b-41d4-a716-446655440002",
+          "label": "Home",
+          "fullAddress": "123 Main Street, Apartment 4B",
+          "city": "Mumbai",
+          "pincode": "400001",
+          "isDefault": true
+        }
+      }
+    },
+    "failureResponse": {
+      "status": 400,
+      "body": {
+        "error": true,
+        "message": "Order is already assigned or cannot be assigned in current status"
+      }
+    }
+  },
+  {
+    "name": "PATCH /api/admin/orders/:id/status - Update Order Status",
+    "method": "PATCH",
+    "url": "http://localhost:4000/api/admin/orders/550e8400-e29b-41d4-a716-446655440000/status",
+    "headers": {
+      "Authorization": "Bearer YOUR_ADMIN_JWT_TOKEN",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "status": "preparing",
+      "assignedDeliveryId": "aa0e8400-e29b-41d4-a716-446655440005"
+    },
+    "description": "Update order status and optionally assign delivery boy. Allowed statuses: confirmed, preparing, out_for_delivery, delivered, cancelled. Admin only.",
+    "successResponse": {
+      "status": 200,
+      "body": {
+        "id": "550e8400-e29b-41d4-a716-446655440000",
+        "orderNumber": "ORD-12345",
+        "status": "preparing",
+        "assignedDeliveryId": "aa0e8400-e29b-41d4-a716-446655440005",
+        "totalAmount": 25000,
+        "deliveryFee": 5000,
+        "paymentMethod": "online",
+        "pickedAt": null,
+        "outForDeliveryAt": null,
+        "deliveredAt": null,
+        "createdAt": "2024-01-15T10:30:00.000Z",
+        "updatedAt": "2024-01-15T11:00:00.000Z",
+        "items": [
+          {
+            "id": "880e8400-e29b-41d4-a716-446655440003",
+            "productId": "990e8400-e29b-41d4-a716-446655440004",
+            "qty": "2.5",
+            "unitPrice": 8000,
+            "subtotal": 20000,
+            "product": {
+              "id": "990e8400-e29b-41d4-a716-446655440004",
+              "name": "Fresh Tomatoes",
+              "category": "Vegetables",
+              "imageUrl": "https://example.com/tomatoes.jpg"
+            }
+          }
+        ],
+        "user": {
+          "id": "660e8400-e29b-41d4-a716-446655440001",
+          "name": "John Doe",
+          "phone": "9876543210",
+          "email": "john.doe@example.com"
+        },
+        "address": {
+          "id": "770e8400-e29b-41d4-a716-446655440002",
+          "label": "Home",
+          "fullAddress": "123 Main Street, Apartment 4B",
+          "city": "Mumbai",
+          "pincode": "400001",
+          "isDefault": true
+        }
+      }
+    },
+    "failureResponse": {
+      "status": 400,
+      "body": {
+        "error": true,
+        "message": "Invalid status transition. Cannot change from \"pending\" to \"preparing\". Valid transitions: confirmed, cancelled"
+      }
+    }
+  },
+  {
+    "name": "GET /api/admin/orders - With Search Filter",
+    "method": "GET",
+    "url": "http://localhost:4000/api/admin/orders?search=John&status=confirmed",
+    "headers": {
+      "Authorization": "Bearer YOUR_ADMIN_JWT_TOKEN",
+      "Content-Type": "application/json"
+    },
+    "description": "Search orders by order number, customer name, or phone. Filter by status.",
+    "successResponse": {
+      "status": 200,
+      "body": {
+        "data": [
+          {
+            "id": "550e8400-e29b-41d4-a716-446655440000",
+            "orderNumber": "ORD-12345",
+            "status": "confirmed",
+            "user": {
+              "name": "John Doe",
+              "phone": "9876543210"
+            },
+            "assignedDelivery": {
+              "name": "Rajesh Kumar",
+              "phone": "9876543211"
+            }
+          }
+        ],
+        "pagination": {
+          "page": 1,
+          "limit": 20,
+          "total": 1
+        }
+      }
+    },
+    "failureResponse": {
+      "status": 400,
+      "body": {
+        "error": true,
+        "message": "Invalid status. Valid statuses: pending, confirmed, preparing, out_for_delivery, delivered, cancelled"
+      }
+    }
+  }
+]
+

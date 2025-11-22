@@ -1,0 +1,47 @@
+{
+  "name": "Update Location",
+  "description": "Update user location (address). Creates or updates default address. Must be authenticated as user.",
+  "method": "POST",
+  "url": "http://localhost:4000/api/user/location",
+  "headers": {
+    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhYmMxMjMtNDU2Ny04OWVmLWFhYmMtY2RlZi0xMjM0NTY3ODkiLCJyb2xlIjoidXNlciIsImlhdCI6MTYzNTQzMjEwMCwiZXhwIjoxNjM2MDM2OTAwfQ.example_jwt_token",
+    "Content-Type": "application/json"
+  },
+  "body": {
+    "latitude": 28.6139,
+    "longitude": 77.2090,
+    "fullAddress": "123 Main Street, Connaught Place, New Delhi",
+    "city": "New Delhi",
+    "pincode": "110001"
+  },
+  "successResponse": {
+    "status": 200,
+    "body": {
+      "id": "def456-7890-abcd-efgh-ijkl-987654321",
+      "userId": "abc123-4567-89ef-aabc-cdef-123456789",
+      "label": null,
+      "latitude": "28.6139",
+      "longitude": "77.2090",
+      "fullAddress": "123 Main Street, Connaught Place, New Delhi",
+      "city": "New Delhi",
+      "pincode": "110001",
+      "isDefault": true,
+      "createdAt": "2024-01-01T00:00:00.000Z"
+    }
+  },
+  "failureResponse": {
+    "status": 400,
+    "body": {
+      "error": true,
+      "message": "Validation failed",
+      "details": [
+        {
+          "field": "pincode",
+          "message": "Pincode must be exactly 6 digits",
+          "value": "11000"
+        }
+      ]
+    }
+  }
+}
+

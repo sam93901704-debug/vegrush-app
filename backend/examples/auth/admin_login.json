@@ -1,0 +1,33 @@
+{
+  "name": "Admin Google Login",
+  "description": "Authenticate admin user with Google ID token. Email must exist in AdminUser table.",
+  "method": "POST",
+  "url": "http://localhost:4000/api/auth/admin/google",
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "body": {
+    "idToken": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjE2MzU0MzIxMDAiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiJjbGllbnRfaWQiLCJhdWQiOiJjbGllbnRfaWQiLCJzdWIiOiIyMjIyMjIyMjIyMjIyMjIyMjIyMjIiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsIm5hbWUiOiJBZG1pbiBVc2VyIiwicGljdHVyZSI6Imh0dHBzOi8vbGg1Lmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0ExYTFhYTFhYTFhYTFhYTFhYTFhYTFhYTFhYTFhYTFhYTFhYTFhYTFhYTFhIiwiaWF0IjoxNjM1NDMyMTAwLCJleHAiOjE2MzU0MzU3MDB9.example_signature"
+  },
+  "successResponse": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ4eXoxMjMtNDU2Ny04OWVmLWFhYmMtY2RlZi0xMjM0NTY3ODkiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2MzU0MzIxMDAsImV4cCI6MTYzNjAzNjkwMH0.example_jwt_token",
+      "admin": {
+        "id": "xyz123-4567-89ef-aabc-cdef-123456789",
+        "email": "admin@example.com",
+        "googleId": "222222222222222222222",
+        "role": "admin"
+      }
+    }
+  },
+  "failureResponse": {
+    "status": 403,
+    "body": {
+      "error": true,
+      "message": "Not authorized"
+    }
+  }
+}
+
