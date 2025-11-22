@@ -399,7 +399,7 @@ export default function CustomerHomePage() {
               transition={{ duration: 0.3 }}
             >
               <svg
-                className="w-24 h-24 mx-auto text-gray-300 mb-4"
+                className="w-16 h-16 mx-auto text-gray-300 mb-4"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"

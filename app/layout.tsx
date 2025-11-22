@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { CartProvider } from './store/cartContext';
 import CartButton from './customer/components/CartButton';
 import FcmRegistration from './components/FcmRegistration';
+import './globals.css';
 
 export const metadata: Metadata = {
   title: 'VegRush - Fresh Vegetables Delivered Fast',

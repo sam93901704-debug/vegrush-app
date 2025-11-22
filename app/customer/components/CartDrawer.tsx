@@ -93,7 +93,7 @@ export default function CartDrawer({ isOpen, onClose, onCheckout }: CartDrawerPr
           {items.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 px-6">
               <svg
-                className="w-24 h-24 text-gray-300 mb-4"
+                className="w-16 h-16 text-gray-300 mb-4"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
