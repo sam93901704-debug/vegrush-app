@@ -3,8 +3,6 @@
 import { useCart } from '../../store/cartContext';
 import { useState } from 'react';
 import CartDrawer from './CartDrawer';
-'use client';
-
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function CartButton() {

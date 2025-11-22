@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../../store/cartContext';
@@ -474,7 +474,7 @@ export default function CheckoutPage() {
                   })}
                 </div>
               )}
-            </div>
+            </motion.div>
           </div>
 
           {/* Order Summary Sidebar */}
@@ -630,7 +630,7 @@ export default function CheckoutPage() {
                     : 'Add items to your cart'}
                 </p>
               )}
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>

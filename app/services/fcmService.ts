@@ -1,5 +1,8 @@
 'use client';
 
+import { initializeApp, getApps } from 'firebase/app';
+import { getMessaging, getToken, onMessage, isSupported } from 'firebase/messaging';
+
 /**
  * FCM Service for customer app
  * Handles Firebase Cloud Messaging registration and token management
@@ -31,10 +34,6 @@ async function initializeFirebase(): Promise<any> {
   }
 
   try {
-    // Dynamic import to avoid SSR issues
-    const { initializeApp, getApps } = await import('firebase/app');
-    const { getMessaging, isSupported } = await import('firebase/messaging');
-
     // Check if Firebase is supported in this environment
     const messagingSupported = await isSupported();
     if (!messagingSupported) {
@@ -103,9 +102,6 @@ export async function getFcmToken(): Promise<string | null> {
       console.warn('Firebase messaging not available');
       return null;
     }
-
-    // Import getToken dynamically
-    const { getToken } = await import('firebase/messaging');
 
     // Get FCM token
     const token = await getToken(messagingInstance, {
@@ -201,9 +197,6 @@ export async function setupTokenRefresh(): Promise<void> {
     if (!messagingInstance) {
       return;
     }
-
-    // Import onMessage dynamically
-    const { onMessage } = await import('firebase/messaging');
 
     // Listen for foreground messages
     onMessage(messagingInstance, (payload) => {

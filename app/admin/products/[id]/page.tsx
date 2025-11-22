@@ -36,6 +36,7 @@ interface FormErrors {
   unitValue?: string;
   stockQty?: string;
   image?: string;
+  _submit?: string;
 }
 
 export default function EditProductPage() {

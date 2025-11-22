@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useCart } from '../../../store/cartContext';
+import { useCart } from '../../store/cartContext';
 
 interface User {
   id: string;
