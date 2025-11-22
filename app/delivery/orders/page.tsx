@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import PendingSyncBadge from '../components/PendingSyncBadge';
-import { API_URL } from '../../config/api';
+import { API_URL } from '@/config/api';
 
 interface OrderItem {
   id: string;

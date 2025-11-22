@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { API_URL } from '../../../config/api';
+import { API_URL } from '@/config/api';
 
 interface Address {
   id: string;

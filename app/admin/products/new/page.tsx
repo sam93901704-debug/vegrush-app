@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { API_URL } from '../../config/api';
+import { API_URL } from '@/config/api';
 
 interface FormData {
   name: string;

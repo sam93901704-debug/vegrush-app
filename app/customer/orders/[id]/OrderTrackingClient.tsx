@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import OrderStatusTracker from './components/OrderStatusTracker';
-import { API_URL } from '../../../config/api';
+import { API_URL } from '@/config/api';
 
 interface Address {
   id: string;

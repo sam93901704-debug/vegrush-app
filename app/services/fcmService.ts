@@ -2,7 +2,7 @@
 
 import { initializeApp, getApps } from 'firebase/app';
 import { getMessaging, getToken, onMessage, isSupported } from 'firebase/messaging';
-import { API_URL } from '../config/api';
+import { API_URL } from '@/config/api';
 
 /**
  * FCM Service for customer app

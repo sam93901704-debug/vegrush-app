@@ -8,7 +8,7 @@ import { useParallax } from '../../../hooks/useParallax';
 import ProductCard from '../../components/ProductCard';
 import QuantitySelector from './components/QuantitySelector';
 import FreshnessTag from './components/FreshnessTag';
-import { API_URL } from '../../../config/api';
+import { API_URL } from '@/config/api';
 import NutritionalInfo from './components/NutritionalInfo';
 import SimilarProductsCarousel from './components/SimilarProductsCarousel';
 

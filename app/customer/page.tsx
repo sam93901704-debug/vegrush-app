@@ -9,7 +9,7 @@ import ProductCardSkeleton from './components/ProductCardSkeleton';
 import HeroSection from './components/HeroSection';
 import CategoryChip from './components/CategoryChip';
 import SortMenu, { SortOption } from './components/SortMenu';
-import { API_URL } from '../config/api';
+import { API_URL } from '@/config/api';
 
 interface Product {
   id: string;

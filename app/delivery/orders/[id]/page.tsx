@@ -5,7 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { offlineQueue } from '../../utils/offlineQueue';
 import PendingSyncBadge from '../../components/PendingSyncBadge';
-import { API_URL } from '../../../config/api';
+import { API_URL } from '@/config/api';
 
 interface OrderItem {
   id: string;
