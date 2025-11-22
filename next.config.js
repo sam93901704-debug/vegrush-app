@@ -1,11 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export', // Static export for Capacitor
+  output: 'standalone',
+  reactStrictMode: false,
   images: {
-    unoptimized: true, // Required for static export
+    unoptimized: false,
   },
   trailingSlash: true,
-  distDir: 'out',
 };
 
 module.exports = nextConfig;
