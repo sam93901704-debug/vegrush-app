@@ -42,14 +42,14 @@ export async function getActiveDeliveryBoys(): Promise<DeliveryBoyAssignment[]> 
     ],
   });
 
-  // Map to include lastAssignedAt (currently null if field doesn't exist)
+  // Map to include lastAssignedAt
   return deliveryBoys.map((boy) => ({
     id: boy.id,
     name: boy.name,
     phone: boy.phone,
     vehicleNumber: boy.vehicleNumber,
     isActive: boy.isActive,
-    lastAssignedAt: (boy as any).lastAssignedAt || null, // Type assertion for field that may not exist yet
+    lastAssignedAt: boy.lastAssignedAt || null,
     createdAt: boy.createdAt,
   }));
 }
@@ -173,8 +173,8 @@ export async function autoAssign(
 
       // Sort by lastAssignedAt (nulls first for round-robin), then by createdAt
       const deliveryBoys = allDeliveryBoys.sort((a, b) => {
-        const aLastAssigned = (a as any).lastAssignedAt;
-        const bLastAssigned = (b as any).lastAssignedAt;
+        const aLastAssigned = a.lastAssignedAt;
+        const bLastAssigned = b.lastAssignedAt;
 
         // Nulls first (never assigned gets priority)
         if (!aLastAssigned && !bLastAssigned) {
@@ -198,11 +198,7 @@ export async function autoAssign(
       }
 
       // Update order with assignedDeliveryId
-      const updateData: Prisma.OrderUpdateInput & {
-        assignedDeliveryId: string;
-        outForDeliveryAt?: Date;
-        deliveredAt?: Date;
-      } = {
+      const updateData: Prisma.OrderUncheckedUpdateInput = {
         assignedDeliveryId: selectedDeliveryBoy.id,
       };
 
@@ -213,7 +209,7 @@ export async function autoAssign(
         if (orderService.canTransition(order.status, 'out_for_delivery')) {
           updateData.status = 'out_for_delivery';
           // Store timestamp when transitioning to 'out_for_delivery'
-          (updateData as any).outForDeliveryAt = new Date();
+          updateData.outForDeliveryAt = new Date();
         }
       }
 
@@ -259,30 +255,44 @@ export async function autoAssign(
       await tx.deliveryBoy.update({
         where: { id: selectedDeliveryBoy.id },
         data: {
-          // Note: lastAssignedAt field needs to be added to Prisma schema
-          // Add: lastAssignedAt DateTime? to DeliveryBoy model
           lastAssignedAt: new Date(),
-        } as any, // Type assertion needed if field doesn't exist yet
+        },
       });
 
       // Send notification to delivery boy (non-blocking, outside transaction)
       // We do this outside the transaction to avoid long-running operations
-      notificationService
-        .notifyDeliveryAssigned(selectedDeliveryBoy, {
-          id: updatedOrder.id,
-          orderNumber: updatedOrder.orderNumber,
-          user: updatedOrder.user ? {
-            name: updatedOrder.user.name,
-            phone: updatedOrder.user.phone,
-          } : undefined,
-        })
-        .catch((err) => {
-          console.error('Notification failed:', err);
-          // Don't fail the assignment if notification fails
-        });
+      // Fetch delivery boy with fcmToken for notification
+      const deliveryBoyWithToken = await db.deliveryBoy.findUnique({
+        where: { id: selectedDeliveryBoy.id },
+        select: { id: true, name: true, phone: true, fcmToken: true },
+      });
+      
+      if (deliveryBoyWithToken) {
+        notificationService
+          .notifyDeliveryAssigned(deliveryBoyWithToken, {
+            id: updatedOrder.id,
+            orderNumber: updatedOrder.orderNumber,
+            user: updatedOrder.user ? {
+              name: updatedOrder.user.name,
+              phone: updatedOrder.user.phone,
+            } : undefined,
+          })
+          .catch((err) => {
+            console.error('Notification failed:', err);
+            // Don't fail the assignment if notification fails
+          });
+      }
+
+      // Ensure assignedDeliveryId is not null (we just assigned it)
+      if (!updatedOrder.assignedDeliveryId) {
+        throw new Error('Failed to assign delivery boy to order');
+      }
 
       return {
-        order: updatedOrder as any,
+        order: {
+          ...updatedOrder,
+          assignedDeliveryId: updatedOrder.assignedDeliveryId,
+        },
         deliveryBoy: {
           id: selectedDeliveryBoy.id,
           name: selectedDeliveryBoy.name,
@@ -383,10 +393,7 @@ export async function manualAssign(
       }
 
       // Build update data
-      const updateData: Prisma.OrderUpdateInput & {
-        assignedDeliveryId: string;
-        outForDeliveryAt?: Date;
-      } = {
+      const updateData: Prisma.OrderUncheckedUpdateInput = {
         assignedDeliveryId: deliveryBoyId,
       };
 
@@ -395,7 +402,7 @@ export async function manualAssign(
         if (orderService.canTransition(order.status, 'out_for_delivery')) {
           updateData.status = 'out_for_delivery';
           // Store timestamp when transitioning to 'out_for_delivery'
-          (updateData as any).outForDeliveryAt = new Date();
+          updateData.outForDeliveryAt = new Date();
         }
       }
 
@@ -441,10 +448,8 @@ export async function manualAssign(
       await tx.deliveryBoy.update({
         where: { id: deliveryBoyId },
         data: {
-          // Note: lastAssignedAt field needs to be added to Prisma schema
-          // Add: lastAssignedAt DateTime? to DeliveryBoy model
           lastAssignedAt: new Date(),
-        } as any, // Type assertion needed if field doesn't exist yet
+        },
       });
 
       // Log assignment to audit log (non-blocking, outside transaction)
@@ -473,20 +478,36 @@ export async function manualAssign(
       }
 
       // Send notification to delivery boy (non-blocking, outside transaction)
-      notificationService
-        .notifyDeliveryAssigned(deliveryBoy, {
-          id: updatedOrder.id,
-          orderNumber: updatedOrder.orderNumber,
-          user: updatedOrder.user ? {
-            name: updatedOrder.user.name,
-            phone: updatedOrder.user.phone,
-          } : undefined,
-        })
-        .catch((err) => {
-          console.error('Notification failed:', err);
-        });
+      // Fetch delivery boy with fcmToken for notification
+      const deliveryBoyWithToken = await db.deliveryBoy.findUnique({
+        where: { id: deliveryBoyId },
+        select: { id: true, name: true, phone: true, fcmToken: true },
+      });
+      
+      if (deliveryBoyWithToken) {
+        notificationService
+          .notifyDeliveryAssigned(deliveryBoyWithToken, {
+            id: updatedOrder.id,
+            orderNumber: updatedOrder.orderNumber,
+            user: updatedOrder.user ? {
+              name: updatedOrder.user.name,
+              phone: updatedOrder.user.phone,
+            } : undefined,
+          })
+          .catch((err) => {
+            console.error('Notification failed:', err);
+          });
+      }
 
-      return updatedOrder as any;
+      // Ensure assignedDeliveryId is not null (we just assigned it)
+      if (!updatedOrder.assignedDeliveryId) {
+        throw new Error('Failed to assign delivery boy to order');
+      }
+
+      return {
+        ...updatedOrder,
+        assignedDeliveryId: updatedOrder.assignedDeliveryId,
+      };
     },
     {
       timeout: 10000, // 10 seconds timeout for transaction

@@ -88,7 +88,7 @@ export async function generatePresignedUpload(
       if (!error && data) {
         // New API: createSignedUploadUrl returns { path, token, signedUrl }
         return {
-          uploadUrl: data.signedUrl || data.url || '',
+          uploadUrl: (data as any).signedUrl || (data as any).url || '',
           filePath: data.path || filePath,
         };
       }

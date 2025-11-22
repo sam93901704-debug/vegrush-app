@@ -46,11 +46,14 @@ export const validateRequest = (schema: ValidationSchema) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       // Format validation errors
-      const formattedErrors = errors.array().map((error) => ({
-        field: error.type === 'field' ? error.path : undefined,
-        message: error.msg,
-        value: error.type === 'field' ? error.value : undefined,
-      }));
+      const formattedErrors = errors.array().map((error) => {
+        const isFieldError = 'path' in error && 'value' in error;
+        return {
+          field: isFieldError ? (error as any).path : undefined,
+          message: error.msg,
+          value: isFieldError ? (error as any).value : undefined,
+        };
+      });
 
       // Use error handler format
       res.status(400).json({

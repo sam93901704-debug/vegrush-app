@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import jwt, { type SignOptions } from 'jsonwebtoken';
 
 /**
  * JWT token payload types
@@ -62,10 +62,14 @@ export function signJwt<T extends BaseJwtPayload>(
 ): string {
   try {
     const secret = getJwtSecret();
-    const token = jwt.sign(payload, secret, {
-      expiresIn,
-      issuer: 'your-app',
-    });
+    const token = jwt.sign(
+      payload as object,
+      secret,
+      {
+        expiresIn,
+        issuer: 'your-app',
+      } as SignOptions
+    );
     return token;
   } catch (error) {
     if (error instanceof Error) {

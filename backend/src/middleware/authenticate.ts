@@ -104,6 +104,7 @@ export const authenticateUser = async (
       phone: deliveryBoy.phone,
       phoneVerified: false,
       profilePic: null,
+      fcmToken: deliveryBoy.fcmToken,
       createdAt: deliveryBoy.createdAt,
       updatedAt: deliveryBoy.createdAt,
     };
@@ -133,6 +134,7 @@ export const authenticateUser = async (
       phone: null,
       phoneVerified: false,
       profilePic: null,
+      fcmToken: null, // AdminUser doesn't have fcmToken
       createdAt: adminUser.createdAt,
       updatedAt: adminUser.createdAt,
     };

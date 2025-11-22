@@ -86,14 +86,15 @@ model OrderItem {
 }
 
 model DeliveryBoy {
-  id           String    @id @default(uuid())
-  name         String
-  phone        String    @unique
+  id            String    @id @default(uuid())
+  name          String
+  phone         String    @unique
   vehicleNumber String?
-  fcmToken     String?   // FCM device token for push notifications
-  isActive     Boolean   @default(true)
-  orders       Order[]   // Orders assigned to this delivery boy
-  createdAt    DateTime  @default(now())
+  fcmToken      String?   // FCM device token for push notifications
+  isActive      Boolean   @default(true)
+  lastAssignedAt DateTime? // Timestamp of last order assignment (for round-robin)
+  orders        Order[]   // Orders assigned to this delivery boy
+  createdAt     DateTime  @default(now())
 }
 
 model AuditLog {

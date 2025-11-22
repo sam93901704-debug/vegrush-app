@@ -54,7 +54,7 @@ export const errorHandler = (
   const errorResponse: ErrorResponse = {
     error: true,
     message,
-    ...(details && { details }),
+    ...(details !== undefined ? { details } : {}),
   };
 
   // Default to 500 if status code not set

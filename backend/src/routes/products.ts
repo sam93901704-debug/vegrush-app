@@ -4,7 +4,7 @@ import { validateRequest, query, param, body } from '../middleware/validateReque
 import { authenticateUser } from '../middleware/authenticate';
 import { requireRole } from '../middleware/requireRole';
 import {
-  getProducts,
+  listProducts,
   getProductById,
   createProduct,
   updateProduct,
@@ -37,7 +37,7 @@ router.get(
         .withMessage('in_stock must be true, false, 1, or 0'),
     ],
   }),
-  asyncHandler(getProducts)
+  asyncHandler(listProducts)
 );
 
 /**

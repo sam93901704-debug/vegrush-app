@@ -53,7 +53,7 @@ export async function createAuditLog(data: AuditLogData): Promise<{
         actorId: data.actorId || null,
         actorRole: data.actorRole || null,
         action: data.action,
-        meta: data.meta ? (data.meta as Prisma.JsonValue) : null,
+        meta: data.meta ? (data.meta as Prisma.InputJsonValue) : Prisma.JsonNull,
       },
     });
 

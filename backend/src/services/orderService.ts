@@ -295,25 +295,18 @@ export async function transitionOrder(
   }
 
   // Build update data
-  const updateData: Prisma.OrderUpdateInput & {
-    outForDeliveryAt?: Date;
-    deliveredAt?: Date;
-  } = {
+  const updateData: Prisma.OrderUpdateInput = {
     status: nextStatus,
   };
 
   // Store timestamp when status changes to 'out_for_delivery'
   if (nextStatus === 'out_for_delivery' && currentOrder.status !== 'out_for_delivery') {
-    // Note: outForDeliveryAt field needs to be added to Prisma schema
-    // Add: outForDeliveryAt DateTime? to Order model
     updateData.outForDeliveryAt = new Date();
   }
 
   // Store timestamp and settlement fields when status changes to 'delivered'
   if (nextStatus === 'delivered' && currentOrder.status !== 'delivered') {
     // Store delivered timestamp
-    // Note: deliveredAt field needs to be added to Prisma schema
-    // Add: deliveredAt DateTime? to Order model
     updateData.deliveredAt = new Date();
 
     // Store final settlement fields if needed
@@ -367,6 +360,6 @@ export async function transitionOrder(
     );
   }
 
-  return updatedOrder as any; // Type assertion needed if schema fields don't match yet
+  return updatedOrder;
 }
 

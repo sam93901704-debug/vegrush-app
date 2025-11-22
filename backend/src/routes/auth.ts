@@ -85,8 +85,7 @@ router.post(
     // Sign JWT token
     const tokenPayload: Omit<UserJwtPayload, 'iat' | 'exp'> = {
       userId: user.id,
-      email: user.email,
-      googleId: user.googleId,
+      role: 'user',
     };
 
     const token = signJwt(tokenPayload);
