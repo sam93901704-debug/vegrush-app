@@ -52,15 +52,14 @@ export default function GoogleLoginButton({ onSuccess }: GoogleLoginButtonProps)
       try {
         await loadGoogleScript();
 
-        const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!;
+        const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
         if (!clientId) {
-          console.warn('Google Client ID is not configured');
-          return;
+          throw new Error('Google Client ID is not configured');
         }
 
         // Safe logging in dev mode only
         if (process.env.NODE_ENV === 'development') {
-          console.log('Google ID:', process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
+          console.log('Loaded Google ID:', clientId);
         }
 
         if (!window.google?.accounts?.id) {
@@ -144,7 +143,7 @@ export default function GoogleLoginButton({ onSuccess }: GoogleLoginButtonProps)
       // Ensure Google SDK is loaded
       if (!initialized) {
         await loadGoogleScript();
-        const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!;
+        const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
         if (!clientId) {
           throw new Error('Google Client ID is not configured');
         }
