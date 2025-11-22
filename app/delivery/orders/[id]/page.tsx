@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { offlineQueue } from '../../utils/offlineQueue';
 import PendingSyncBadge from '../../components/PendingSyncBadge';
+import { API_URL } from '../../../config/api';
 
 interface OrderItem {
   id: string;
@@ -96,7 +97,7 @@ export default function DeliveryOrderDetailPage() {
         return;
       }
 
-      const response = await fetch(`http://localhost:4000/api/delivery/orders/${orderId}`, {
+      const response = await fetch(`${API_URL}/api/delivery/orders/${orderId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -198,7 +199,7 @@ export default function DeliveryOrderDetailPage() {
       return;
     }
 
-    const url = `http://localhost:4000/api/delivery/orders/${order.id}/status`;
+    const url = `${API_URL}/api/delivery/orders/${order.id}/status`;
     const body: { status: string; paymentType?: string } = { status: newStatus };
     if (paymentType) {
       body.paymentType = paymentType;
@@ -319,7 +320,7 @@ export default function DeliveryOrderDetailPage() {
         const formData = new FormData();
         formData.append('image', deliveryPhoto);
 
-        const uploadResponse = await fetch('http://localhost:4000/api/admin/upload-product-image', {
+        const uploadResponse = await fetch(`${API_URL}/api/admin/upload-product-image`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,

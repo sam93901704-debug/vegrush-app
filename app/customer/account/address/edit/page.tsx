@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import { API_URL } from '../../../config/api';
 
 interface Address {
   id: string;
@@ -56,7 +57,7 @@ export default function EditAddressPage() {
           throw new Error('Authentication required');
         }
 
-        const response = await fetch('http://localhost:4000/api/user/address', {
+        const response = await fetch(`${API_URL}/api/user/address`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
@@ -407,7 +408,7 @@ export default function EditAddressPage() {
         throw new Error('Authentication required');
       }
 
-      const response = await fetch('http://localhost:4000/api/user/location', {
+      const response = await fetch(`${API_URL}/api/user/location`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

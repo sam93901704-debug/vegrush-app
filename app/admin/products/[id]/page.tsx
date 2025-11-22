@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import { API_URL } from '../../../config/api';
 
 interface Product {
   id: string;
@@ -88,7 +89,7 @@ export default function EditProductPage() {
         }
 
         const response = await fetch(
-          `http://localhost:4000/api/admin/products/${productId}`,
+          `${API_URL}/api/admin/products/${productId}`,
           {
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -179,7 +180,7 @@ export default function EditProductPage() {
       const formData = new FormData();
       formData.append('image', selectedFile);
 
-      const response = await fetch('http://localhost:4000/api/admin/upload-product-image', {
+      const response = await fetch(`${API_URL}/api/admin/upload-product-image`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -283,7 +284,7 @@ export default function EditProductPage() {
 
       // Step 3: Update product
       const response = await fetch(
-        `http://localhost:4000/api/admin/products/${productId}`,
+        `${API_URL}/api/admin/products/${productId}`,
         {
           method: 'PUT',
           headers: {

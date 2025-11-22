@@ -9,6 +9,7 @@ import ProductCardSkeleton from './components/ProductCardSkeleton';
 import HeroSection from './components/HeroSection';
 import CategoryChip from './components/CategoryChip';
 import SortMenu, { SortOption } from './components/SortMenu';
+import { API_URL } from '../config/api';
 
 interface Product {
   id: string;
@@ -115,7 +116,7 @@ export default function CustomerHomePage() {
         }
 
         const response = await fetch(
-          `http://localhost:4000/api/products?${params.toString()}`
+          `${API_URL}/api/products?${params.toString()}`
         );
 
         if (!response.ok) {

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { API_URL } from '../../config/api';
 
 interface GoogleLoginButtonProps {
   onSuccess: () => void;
@@ -51,10 +52,15 @@ export default function GoogleLoginButton({ onSuccess }: GoogleLoginButtonProps)
       try {
         await loadGoogleScript();
 
-        const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '';
+        const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!;
         if (!clientId) {
           console.warn('Google Client ID is not configured');
           return;
+        }
+
+        // Safe logging in dev mode only
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Google ID:', process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
         }
 
         if (!window.google?.accounts?.id) {
@@ -99,7 +105,7 @@ export default function GoogleLoginButton({ onSuccess }: GoogleLoginButtonProps)
       const { credential } = response;
 
       // Send idToken to backend
-      const backendResponse = await fetch('http://localhost:4000/api/auth/google', {
+      const backendResponse = await fetch(`${API_URL}/api/auth/google`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -138,7 +144,7 @@ export default function GoogleLoginButton({ onSuccess }: GoogleLoginButtonProps)
       // Ensure Google SDK is loaded
       if (!initialized) {
         await loadGoogleScript();
-        const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '';
+        const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!;
         if (!clientId) {
           throw new Error('Google Client ID is not configured');
         }

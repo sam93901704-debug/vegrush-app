@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { API_URL } from '../../config/api';
 
 interface Product {
   id: string;
@@ -56,7 +57,7 @@ export default function AdminProductsPage() {
       }
 
       const response = await fetch(
-        `http://localhost:4000/api/admin/products?${params.toString()}`,
+        `${API_URL}/api/admin/products?${params.toString()}`,
         {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -110,7 +111,7 @@ export default function AdminProductsPage() {
       }
 
       const response = await fetch(
-        `http://localhost:4000/api/admin/products/${productId}/stock`,
+        `${API_URL}/api/admin/products/${productId}/stock`,
         {
           method: 'PATCH',
           headers: {
@@ -161,7 +162,7 @@ export default function AdminProductsPage() {
       }
 
       const response = await fetch(
-        `http://localhost:4000/api/admin/products/${productId}`,
+        `${API_URL}/api/admin/products/${productId}`,
         {
           method: 'PUT',
           headers: {

@@ -2,6 +2,7 @@
 
 import { initializeApp, getApps } from 'firebase/app';
 import { getMessaging, getToken, onMessage, isSupported } from 'firebase/messaging';
+import { API_URL } from '../config/api';
 
 /**
  * FCM Service for customer app
@@ -131,7 +132,7 @@ export async function saveFcmTokenToBackend(token: string): Promise<boolean> {
       return false;
     }
 
-    const response = await fetch('http://localhost:4000/api/user/fcm-token', {
+    const response = await fetch(`${API_URL}/api/user/fcm-token`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${authToken}`,

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import OrderStatusTracker from './components/OrderStatusTracker';
+import { API_URL } from '../../../config/api';
 
 interface Address {
   id: string;
@@ -80,7 +81,7 @@ export default function OrderTrackingClient() {
         throw new Error('Authentication required');
       }
 
-      const response = await fetch(`http://localhost:4000/api/orders/${orderId}`, {
+      const response = await fetch(`${API_URL}/api/orders/${orderId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',

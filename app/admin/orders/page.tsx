@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import { API_URL } from '../../config/api';
 
 interface Order {
   id: string;
@@ -97,7 +98,7 @@ export default function AdminOrdersPage() {
       }
 
       const response = await fetch(
-        `http://localhost:4000/api/admin/orders?${params.toString()}`,
+        `${API_URL}/api/admin/orders?${params.toString()}`,
         {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -160,7 +161,7 @@ export default function AdminOrdersPage() {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      const response = await fetch('http://localhost:4000/api/admin/delivery-boys', {
+      const response = await fetch(`${API_URL}/api/admin/delivery-boys`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -267,7 +268,7 @@ export default function AdminOrdersPage() {
         throw new Error('Authentication required');
       }
 
-      const response = await fetch(`http://localhost:4000/api/admin/orders/${orderId}/status`, {
+      const response = await fetch(`${API_URL}/api/admin/orders/${orderId}/status`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -330,7 +331,7 @@ export default function AdminOrdersPage() {
         throw new Error('Authentication required');
       }
 
-      const response = await fetch(`http://localhost:4000/api/admin/orders/${orderId}/assign`, {
+      const response = await fetch(`${API_URL}/api/admin/orders/${orderId}/assign`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

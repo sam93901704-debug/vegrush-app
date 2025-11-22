@@ -8,6 +8,7 @@ import { useParallax } from '../../../hooks/useParallax';
 import ProductCard from '../../components/ProductCard';
 import QuantitySelector from './components/QuantitySelector';
 import FreshnessTag from './components/FreshnessTag';
+import { API_URL } from '../../../config/api';
 import NutritionalInfo from './components/NutritionalInfo';
 import SimilarProductsCarousel from './components/SimilarProductsCarousel';
 
@@ -51,7 +52,7 @@ export default function ProductDetailPage() {
         setError(null);
 
         const response = await fetch(
-          `http://localhost:4000/api/products/${productId}`
+          `${API_URL}/api/products/${productId}`
         );
 
         if (!response.ok) {
@@ -67,7 +68,7 @@ export default function ProductDetailPage() {
 
         // Fetch related products (same category, exclude current product)
         const relatedResponse = await fetch(
-          `http://localhost:4000/api/products?category=${encodeURIComponent(
+          `${API_URL}/api/products?category=${encodeURIComponent(
             productData.category
           )}&limit=10`
         );

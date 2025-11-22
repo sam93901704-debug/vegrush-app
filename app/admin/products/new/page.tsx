@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { API_URL } from '../../config/api';
 
 interface FormData {
   name: string;
@@ -103,7 +104,7 @@ export default function NewProductPage() {
       const formData = new FormData();
       formData.append('image', selectedFile);
 
-      const response = await fetch('http://localhost:4000/api/admin/upload-product-image', {
+      const response = await fetch(`${API_URL}/api/admin/upload-product-image`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -199,7 +200,7 @@ export default function NewProductPage() {
       const priceInPaise = Math.round(parseFloat(formData.price) * 100);
 
       // Step 3: Submit form
-      const response = await fetch('http://localhost:4000/api/admin/products', {
+      const response = await fetch(`${API_URL}/api/admin/products`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

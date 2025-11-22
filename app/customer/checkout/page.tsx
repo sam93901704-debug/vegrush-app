@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../../store/cartContext';
+import { API_URL } from '../../config/api';
 
 interface Address {
   id: string;
@@ -53,7 +54,7 @@ export default function CheckoutPage() {
         }
 
         // Get user's default address
-        const addressResponse = await fetch('http://localhost:4000/api/user/address', {
+        const addressResponse = await fetch(`${API_URL}/api/user/address`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
@@ -115,7 +116,7 @@ export default function CheckoutPage() {
       }));
 
       // Create order
-      const response = await fetch('http://localhost:4000/api/orders', {
+      const response = await fetch(`${API_URL}/api/orders`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

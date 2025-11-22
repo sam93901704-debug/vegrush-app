@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import { API_URL } from '../../config/api';
 
 interface OrderItem {
   id: string;
@@ -70,7 +71,7 @@ export default function DeliverySummaryPage() {
           throw new Error('Authentication required');
         }
 
-        const response = await fetch('http://localhost:4000/api/delivery/summary', {
+        const response = await fetch(`${API_URL}/api/delivery/summary`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',

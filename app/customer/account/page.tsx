@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../../store/cartContext';
+import { API_URL } from '../../config/api';
 
 interface User {
   id: string;
@@ -68,7 +69,7 @@ export default function AccountPage() {
         throw new Error('Authentication required');
       }
 
-      const response = await fetch('http://localhost:4000/api/auth/me', {
+      const response = await fetch(`${API_URL}/api/auth/me`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -95,7 +96,7 @@ export default function AccountPage() {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      const response = await fetch('http://localhost:4000/api/user/address', {
+      const response = await fetch(`${API_URL}/api/user/address`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -118,7 +119,7 @@ export default function AccountPage() {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      const response = await fetch('http://localhost:4000/api/orders?limit=10', {
+      const response = await fetch(`${API_URL}/api/orders?limit=10`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -171,7 +172,7 @@ export default function AccountPage() {
         throw new Error('Authentication required');
       }
 
-      const response = await fetch(`http://localhost:4000/api/orders/${order.id}`, {
+      const response = await fetch(`${API_URL}/api/orders/${order.id}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -188,7 +189,7 @@ export default function AccountPage() {
       const productPromises = orderData.items.map(async (item: OrderItem) => {
         try {
           const productResponse = await fetch(
-            `http://localhost:4000/api/products/${item.productId}`
+            `${API_URL}/api/products/${item.productId}`
           );
           
           if (productResponse.ok) {
