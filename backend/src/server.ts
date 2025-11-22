@@ -115,7 +115,7 @@ app.get('/health', (_req: Request, res: Response) => {
 });
 
 // API routes
-app.use('/api/auth', authRoutes);
+app.use("/api/auth", authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/admin/products', productRoutes);
 app.use('/api/orders', orderRoutes);
@@ -143,30 +143,28 @@ app.use(errorHandler);
 // Start server
 const PORT = process.env.PORT || 4000;
 
-// Only start server if this file is run directly (not when imported for tests)
-if (require.main === module) {
-  const server = app.listen(PORT, () => {
-    logger.info(`🚀 Server running on port ${PORT}`);
-    logger.info(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
-  });
+// Start the server (this is the entry point)
+const server = app.listen(PORT, () => {
+  logger.info(`🚀 Server running on port ${PORT}`);
+  logger.info(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
+});
 
-  // Graceful shutdown
-  process.on('SIGTERM', () => {
-    logger.info('SIGTERM signal received: closing HTTP server');
-    server.close(() => {
-      logger.info('HTTP server closed');
-      process.exit(0);
-    });
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  logger.info('SIGTERM signal received: closing HTTP server');
+  server.close(() => {
+    logger.info('HTTP server closed');
+    process.exit(0);
   });
+});
 
-  process.on('SIGINT', () => {
-    logger.info('SIGINT signal received: closing HTTP server');
-    server.close(() => {
-      logger.info('HTTP server closed');
-      process.exit(0);
-    });
+process.on('SIGINT', () => {
+  logger.info('SIGINT signal received: closing HTTP server');
+  server.close(() => {
+    logger.info('HTTP server closed');
+    process.exit(0);
   });
-}
+});
 
 // Export app for testing
 export default app;
