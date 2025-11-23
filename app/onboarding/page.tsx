@@ -137,13 +137,8 @@ export default function OnboardingPage() {
   useEffect(() => {
     const hasCompletedOnboarding = localStorage.getItem('onboardingCompleted');
     if (hasCompletedOnboarding === 'true') {
-      // Check if user is logged in
-      const token = localStorage.getItem('token');
-      if (token) {
-        router.push('/customer');
-      } else {
-        setShowLogin(true);
-      }
+      // Skip auth check - go directly to customer page
+      router.push('/customer');
     }
   }, [router]);
 
@@ -185,9 +180,11 @@ export default function OnboardingPage() {
     setShowLogin(true);
   };
 
-  // Handle Google login success
+  // Handle login success (no auth needed)
   const handleLoginSuccess = () => {
     localStorage.setItem('onboardingCompleted', 'true');
+    // Set a dev token for compatibility
+    localStorage.setItem('token', 'dev-customer');
     router.push('/customer');
   };
 

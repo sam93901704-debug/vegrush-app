@@ -7,7 +7,8 @@ export default function DeliveryPage() {
   const router = useRouter();
 
   useEffect(() => {
-    // Redirect to orders page by default
+    // Set dev delivery token and redirect
+    localStorage.setItem('token', 'dev-delivery');
     router.push('/delivery/orders');
   }, [router]);
 

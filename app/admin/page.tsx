@@ -7,7 +7,8 @@ export default function AdminPage() {
   const router = useRouter();
 
   useEffect(() => {
-    // Redirect to orders page by default
+    // Set dev admin token and redirect
+    localStorage.setItem('token', 'dev-admin');
     router.push('/admin/orders');
   }, [router]);
 

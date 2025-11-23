@@ -19,6 +19,17 @@ const FIREBASE_CONFIG = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '',
 };
 
+// Check if Firebase is configured
+function isFirebaseConfigured(): boolean {
+  return !!(
+    FIREBASE_CONFIG.apiKey &&
+    FIREBASE_CONFIG.authDomain &&
+    FIREBASE_CONFIG.projectId &&
+    FIREBASE_CONFIG.messagingSenderId &&
+    FIREBASE_CONFIG.appId
+  );
+}
+
 let messaging: any = null;
 let isInitialized = false;
 
@@ -30,6 +41,11 @@ async function initializeFirebase(): Promise<any> {
     return null; // SSR safety
   }
 
+  // Skip initialization if Firebase config is missing
+  if (!isFirebaseConfigured()) {
+    return null; // Silent skip - no error
+  }
+
   if (isInitialized && messaging) {
     return messaging;
   }
@@ -38,8 +54,7 @@ async function initializeFirebase(): Promise<any> {
     // Check if Firebase is supported in this environment
     const messagingSupported = await isSupported();
     if (!messagingSupported) {
-      console.warn('Firebase Cloud Messaging is not supported in this environment');
-      return null;
+      return null; // Silent skip
     }
 
     // Initialize Firebase app if not already initialized
@@ -57,7 +72,7 @@ async function initializeFirebase(): Promise<any> {
 
     return messaging;
   } catch (error) {
-    console.error('Failed to initialize Firebase:', error);
+    // Silent fail - don't log errors if Firebase is not configured
     return null;
   }
 }

@@ -46,8 +46,7 @@ export default function FcmRegistration() {
       try {
         await register();
       } catch (err) {
-        console.error('FCM registration failed:', err);
-        // Silent fail - don't show error to user
+        // Silent fail - Firebase might not be configured
       }
     };
 

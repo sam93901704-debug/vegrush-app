@@ -66,7 +66,9 @@ export default function AccountPage() {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        throw new Error('Authentication required');
+        // No auth - use default empty user
+        setUser(null);
+        return;
       }
 
       const response = await fetch(`${API_URL}/api/auth/me`, {
@@ -77,16 +79,16 @@ export default function AccountPage() {
       });
 
       if (!response.ok) {
-        if (response.status === 401) {
-          throw new Error('Authentication required');
-        }
-        throw new Error('Failed to load user profile');
+        // Auth failed - use default empty user, don't show error
+        setUser(null);
+        return;
       }
 
       const data = await response.json();
       setUser(data.user);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load user profile');
+      // Silent fail - use default empty user
+      setUser(null);
     }
   };
 

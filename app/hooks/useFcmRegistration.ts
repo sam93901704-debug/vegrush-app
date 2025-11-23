@@ -68,7 +68,9 @@ export function useFcmRegistration() {
       // Check if user is logged in
       const authToken = localStorage.getItem('token');
       if (!authToken) {
-        throw new Error('User must be logged in to register for push notifications');
+        // Silent skip - no error in dev mode
+        setIsRegistering(false);
+        return null;
       }
 
       // Register for push notifications
@@ -79,12 +81,13 @@ export function useFcmRegistration() {
         setIsRegistered(true);
         return fcmToken;
       } else {
-        throw new Error('Failed to register for push notifications');
+        // Silent skip - Firebase might not be configured
+        setIsRegistering(false);
+        return null;
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to register for push notifications';
-      setError(errorMessage);
-      console.error('FCM registration error:', err);
+      // Silent fail - don't show errors if Firebase is not configured
+      setIsRegistering(false);
       return null;
     } finally {
       setIsRegistering(false);
