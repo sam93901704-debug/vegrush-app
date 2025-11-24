@@ -9,7 +9,7 @@
   "start": "node dist/server.js",
   "prisma:generate": "prisma generate",
   "prisma:migrate": "prisma migrate deploy",
-  "seed": "ts-node src/prisma/seed.ts",
+  "seed": "ts-node prisma/seed.ts",
   "postinstall": "prisma generate && prisma db push"
 },
   "keywords": [],
@@ -48,5 +48,8 @@
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.3.3"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   }
 }
