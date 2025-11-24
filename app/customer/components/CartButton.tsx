@@ -34,12 +34,13 @@ export default function CartButton() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setIsDrawerOpen(true)}
-            className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-40
-                     bg-gradient-to-r from-green-600 to-emerald-600 
+            className="fixed bottom-4 sm:bottom-6 left-1/2 transform -translate-x-1/2 z-40
+                     bg-gradient-to-r from-emerald-600 to-emerald-700 
                      text-white rounded-full shadow-2xl
-                     px-6 py-4 flex items-center gap-3
-                     hover:from-green-700 hover:to-emerald-700
-                     transition-all duration-300"
+                     px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-2 sm:gap-3
+                     hover:from-emerald-700 hover:to-emerald-800
+                     transition-all duration-300
+                     max-w-[calc(100vw-2rem)]"
             aria-label="Open cart"
           >
             {/* Cart Icon */}
@@ -70,8 +71,8 @@ export default function CartButton() {
 
             {/* Cart Info */}
             <div className="flex flex-col items-start">
-              <span className="text-xs text-green-100">View Cart</span>
-              <span className="text-lg font-bold">{formatPrice(totalPrice)}</span>
+              <span className="text-xs text-emerald-100 hidden sm:block">View Cart</span>
+              <span className="text-base sm:text-lg font-bold">{formatPrice(totalPrice)}</span>
             </div>
 
             {/* Arrow */}

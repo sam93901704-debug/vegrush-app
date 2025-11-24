@@ -31,6 +31,7 @@ router.get(
         .isInt({ min: 1, max: 100 })
         .withMessage('Limit must be between 1 and 100'),
       query('category').optional().isString().withMessage('Category must be a string'),
+      query('search').optional().isString().withMessage('Search must be a string'),
       query('in_stock')
         .optional()
         .isIn(['true', 'false', '1', '0'])

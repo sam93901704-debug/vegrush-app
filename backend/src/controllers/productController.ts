@@ -16,7 +16,12 @@ export const listProducts = async (req: Request, res: Response): Promise<void> =
     const limit = parseInt(req.query.limit as string) || 20;
     const category = req.query.category as string | undefined;
     const search = req.query.search as string | undefined;
-    const inStockOnly = req.query.inStockOnly === 'true' || req.query.inStockOnly === '1';
+    // Support both 'inStockOnly' and 'in_stock' for compatibility
+    const inStockOnly =
+      req.query.inStockOnly === 'true' ||
+      req.query.inStockOnly === '1' ||
+      req.query.in_stock === 'true' ||
+      req.query.in_stock === '1';
     
     // TEMPORARILY DISABLED: Admin check removed for testing
     // const isAdmin = (req as any).user?.role === 'admin';

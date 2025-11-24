@@ -21,37 +21,30 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, onClick }: ProductCardProps) {
-  // Format price (paise to rupees)
   const formatPrice = (paise: number) => {
     return `₹${(paise / 100).toFixed(2)}`;
   };
 
-  // Check if product is in stock
   const isInStock = parseFloat(product.stockQty) > 0;
 
   return (
     <motion.div
       onClick={onClick}
-      whileHover={{ y: -4, scale: 1.02 }}
+      whileHover={{ y: -4 }}
       whileTap={{ scale: 0.98 }}
-      className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden border border-gray-100 group"
+      className="bg-white rounded-xl shadow-sm hover:shadow-lg border border-slate-200 overflow-hidden cursor-pointer group transition-all duration-300"
     >
       {/* Product Image */}
-      <div className="w-full h-52 bg-gradient-to-br from-gray-50 to-gray-100 relative overflow-hidden">
+      <div className="w-full aspect-square bg-slate-100 relative overflow-hidden">
         {product.imageUrl ? (
           <img
             src={product.imageUrl}
             alt={product.name}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-300">
-            <svg
-              className="w-20 h-20"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+          <div className="w-full h-full flex items-center justify-center text-slate-300">
+            <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -62,42 +55,42 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
           </div>
         )}
         {!isInStock && (
-          <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center backdrop-blur-sm">
-            <span className="bg-red-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg">
+          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center">
+            <span className="bg-red-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold">
               Out of Stock
             </span>
           </div>
         )}
         {/* Category Badge */}
         <div className="absolute top-3 left-3">
-          <span className="bg-white/90 backdrop-blur-sm text-gray-700 px-3 py-1 rounded-full text-xs font-semibold shadow-md">
+          <span className="bg-white/95 backdrop-blur-sm text-slate-700 px-2.5 py-1 rounded-lg text-xs font-medium shadow-sm">
             {product.category}
           </span>
         </div>
       </div>
 
       {/* Product Info */}
-      <div className="p-5">
-        <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-green-600 transition-colors">
+      <div className="p-4">
+        <h3 className="text-base font-semibold text-slate-900 mb-1.5 line-clamp-2 group-hover:text-emerald-600 transition-colors">
           {product.name}
         </h3>
         {product.description && (
-          <p className="text-sm text-gray-500 mb-4 line-clamp-2 leading-relaxed">
+          <p className="text-sm text-slate-500 mb-3 line-clamp-2 leading-relaxed">
             {product.description}
           </p>
         )}
-        <div className="flex items-end justify-between pt-2 border-t border-gray-100">
+        <div className="flex items-end justify-between pt-3 border-t border-slate-100">
           <div>
-            <p className="text-2xl font-bold text-gray-900 mb-1">
+            <p className="text-xl font-bold text-slate-900">
               {formatPrice(product.price)}
             </p>
-            <p className="text-xs text-gray-500 font-medium">
+            <p className="text-xs text-slate-500 mt-0.5">
               per {product.unitValue} {product.unitType}
             </p>
           </div>
           {isInStock && (
-            <span className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
-              ✓ In Stock
+            <span className="bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-lg text-xs font-medium">
+              In Stock
             </span>
           )}
         </div>
@@ -105,4 +98,3 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
     </motion.div>
   );
 }
-

@@ -1,390 +1,401 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { API_URL } from '@/config/api';
-
-interface Product {
-  id: string;
-  name: string;
-  description: string | null;
-  category: string;
-  price: number;
-  unitType: string;
-  unitValue: string;
-  stockQty: string;
-  imageUrl: string | null;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface ProductsResponse {
-  data: Product[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-  };
-}
+import { useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAdminProducts, useUpdateStock, useDeleteProduct } from '../../hooks/useAdminProducts';
+import { useUpdateProduct } from '../../hooks/useProducts';
+import { useDebounce } from '../../hooks/useDebounce';
+import { SearchBar } from '../../components/ui/SearchBar';
+import { TableSkeleton } from '../../components/ui/Skeleton';
+import { motion, AnimatePresence } from 'framer-motion';
+import toast from 'react-hot-toast';
+import type { Product } from '../../hooks/useProducts';
 
 export default function AdminProductsPage() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [categories, setCategories] = useState<string[]>([]);
-  const [updatingStockId, setUpdatingStockId] = useState<string | null>(null);
+  const debouncedSearch = useDebounce(searchQuery, 300);
 
-  // Fetch products
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+  const { data, isLoading, error } = useAdminProducts({
+    search: debouncedSearch || undefined,
+    category: selectedCategory !== 'all' ? selectedCategory : undefined,
+    limit: 100,
+  });
 
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setError('Authentication required');
-        return;
-      }
+  const updateStock = useUpdateStock();
+  const updateProduct = useUpdateProduct();
+  const deleteProduct = useDeleteProduct();
 
-      const params = new URLSearchParams();
-      if (searchQuery) {
-        params.append('search', searchQuery);
-      }
-      if (selectedCategory !== 'all') {
-        params.append('category', selectedCategory);
-      }
+  const products = data?.data || [];
 
-      const response = await fetch(
-        `${API_URL}/api/admin/products?${params.toString()}`,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+  // Extract unique categories
+  const categories = useMemo(() => {
+    const uniqueCategories = Array.from(new Set(products.map((p) => p.category)));
+    return uniqueCategories;
+  }, [products]);
 
-      if (!response.ok) {
-        throw new Error(`Failed to fetch products: ${response.statusText}`);
-      }
-
-      const data: ProductsResponse = await response.json();
-      setProducts(data.data || data);
-
-      // Extract unique categories
-      const uniqueCategories = Array.from(
-        new Set((data.data || data).map((p) => p.category))
-      );
-      setCategories(uniqueCategories);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch products');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchProducts();
-  }, [searchQuery, selectedCategory]);
-
-  // Update stock quantity (optimistic update)
-  const updateStock = async (productId: string, adjustment: number, currentStock: number) => {
+  const handleStockUpdate = async (productId: string, adjustment: number, currentStock: number) => {
     const newStock = Math.max(0, currentStock + adjustment);
-    
-    // Optimistic update: update UI immediately
-    setProducts((prevProducts) =>
-      prevProducts.map((p) =>
-        p.id === productId
-          ? { ...p, stockQty: newStock.toFixed(2) }
-          : p
-      )
-    );
-
-    setUpdatingStockId(productId);
-
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('Authentication required');
-      }
-
-      const response = await fetch(
-        `${API_URL}/api/admin/products/${productId}/stock`,
-        {
-          method: 'PATCH',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            stockQty: newStock,
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to update stock');
-      }
-
-      // Update with server response (in case of rounding differences)
-      const updatedProduct = await response.json();
-      setProducts((prevProducts) =>
-        prevProducts.map((p) =>
-          p.id === productId
-            ? { ...p, stockQty: updatedProduct.stockQty }
-            : p
-        )
-      );
-    } catch (err) {
-      // Rollback optimistic update on error
-      setProducts((prevProducts) =>
-        prevProducts.map((p) =>
-          p.id === productId
-            ? { ...p, stockQty: currentStock.toFixed(2) }
-            : p
-        )
-      );
-      setError(err instanceof Error ? err.message : 'Failed to update stock');
-    } finally {
-      setUpdatingStockId(null);
+      await updateStock.mutateAsync({ id: productId, stockQty: newStock });
+      toast.success('Stock updated successfully');
+    } catch (error) {
+      toast.error('Failed to update stock');
     }
   };
 
-  // Toggle product active status
-  const toggleActive = async (productId: string, currentStatus: boolean) => {
+  const handleToggleActive = async (productId: string, currentStatus: boolean) => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setError('Authentication required');
-        return;
-      }
-
-      const response = await fetch(
-        `${API_URL}/api/admin/products/${productId}`,
-        {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            isActive: !currentStatus,
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to update product status');
-      }
-
-      // Refresh products list
-      fetchProducts();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update product');
+      await updateProduct.mutateAsync({
+        id: productId,
+        isActive: !currentStatus,
+      });
+      toast.success('Product status updated');
+    } catch (error) {
+      toast.error('Failed to update product status');
     }
   };
 
-  // Format price (paise to rupees)
+  const handleDelete = async (productId: string) => {
+    if (!confirm('Are you sure you want to delete this product?')) return;
+    try {
+      await deleteProduct.mutateAsync({ id: productId });
+      toast.success('Product deleted successfully');
+    } catch (error) {
+      toast.error('Failed to delete product');
+    }
+  };
+
   const formatPrice = (paise: number) => {
     return `₹${(paise / 100).toFixed(2)}`;
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Products</h1>
-        <button
-          onClick={() => {
-            // Navigate to add product page
-            window.location.href = '/admin/products/new';
-          }}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-        >
-          Add Product
-        </button>
-      </div>
-
-      {/* Search and Filter Bar */}
-      <div className="mb-6 flex gap-4">
-        <div className="flex-1">
-          <input
-            type="text"
-            placeholder="Search by name..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        <div className="w-64">
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+    <motion.div
+      className="min-h-screen bg-slate-50"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 max-w-7xl">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Products</h1>
+            <p className="text-sm text-slate-600 mt-1">{products.length} total products</p>
+          </div>
+          <button
+            onClick={() => router.push('/admin/products/new')}
+            className="w-full sm:w-auto px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors font-medium shadow-sm hover:shadow-md flex items-center justify-center gap-2"
           >
-            <option value="all">All Categories</option>
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Add Product
+          </button>
         </div>
-      </div>
 
-      {/* Error Message */}
-      {error && (
-        <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-          {error}
+        {/* Search and Filter Bar */}
+        <div className="mb-6 space-y-4 sm:space-y-0 sm:flex sm:gap-4">
+          <div className="flex-1">
+            <SearchBar
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder="Search products..."
+            />
+          </div>
+          <div className="w-full sm:w-64">
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white text-slate-900"
+            >
+              <option value="all">All Categories</option>
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-      )}
 
-      {/* Loading State */}
-      {loading && (
-        <div className="text-center py-12">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          <p className="mt-4 text-gray-600">Loading products...</p>
-        </div>
-      )}
+        {/* Error Message */}
+        <AnimatePresence>
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl"
+            >
+              Failed to load products
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-      {/* Products Table */}
-      {!loading && !error && (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Image
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Name
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Category
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Price
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Stock
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Active
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {products.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+        {/* Loading State */}
+        {isLoading && <TableSkeleton rows={5} />}
+
+        {/* Products Table */}
+        {!isLoading && !error && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"
+          >
+            {/* Mobile: Card View */}
+            <div className="block sm:hidden divide-y divide-slate-200">
+              <AnimatePresence>
+                {products.length === 0 ? (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="p-12 text-center text-slate-500"
+                  >
                     No products found
-                  </td>
-                </tr>
-              ) : (
-                products.map((product) => (
-                  <tr key={product.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {product.imageUrl ? (
-                        <img
-                          src={product.imageUrl}
-                          alt={product.name}
-                          className="h-16 w-16 object-cover rounded"
-                        />
-                      ) : (
-                        <div className="h-16 w-16 bg-gray-200 rounded flex items-center justify-center text-gray-400">
-                          No Image
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-6 py-4">
-                      <button
-                        onClick={() => {
-                          window.location.href = `/admin/products/${product.id}`;
-                        }}
-                        className="text-left hover:underline"
-                      >
-                        <div className="text-sm font-medium text-gray-900">
-                          {product.name}
-                        </div>
-                        {product.description && (
-                          <div className="text-sm text-gray-500 truncate max-w-xs">
-                            {product.description}
+                  </motion.div>
+                ) : (
+                  products.map((product: Product) => (
+                    <motion.div
+                      key={product.id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 20 }}
+                      className="p-4 space-y-3"
+                    >
+                      <div className="flex gap-3">
+                        {product.imageUrl ? (
+                          <img
+                            src={product.imageUrl}
+                            alt={product.name}
+                            className="h-20 w-20 object-cover rounded-lg"
+                          />
+                        ) : (
+                          <div className="h-20 w-20 bg-slate-200 rounded-lg flex items-center justify-center text-slate-400 text-xs">
+                            No Image
                           </div>
                         )}
-                      </button>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                        {product.category}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatPrice(product.price)}
-                      <span className="text-gray-500 text-xs ml-1">
-                        / {product.unitValue} {product.unitType}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-900 min-w-[80px]">
-                          {parseFloat(product.stockQty).toFixed(2)} {product.unitType}
-                        </span>
-                        <div className="flex gap-1">
-                          <button
-                            onClick={() => updateStock(product.id, -10, parseFloat(product.stockQty))}
-                            disabled={updatingStockId === product.id}
-                            className="px-2 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200 transition disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
-                            title="Decrease by 10"
-                          >
-                            -10
-                          </button>
-                          <button
-                            onClick={() => updateStock(product.id, -1, parseFloat(product.stockQty))}
-                            disabled={updatingStockId === product.id}
-                            className="px-2 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200 transition disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
-                            title="Decrease by 1"
-                          >
-                            -1
-                          </button>
-                          <button
-                            onClick={() => updateStock(product.id, 1, parseFloat(product.stockQty))}
-                            disabled={updatingStockId === product.id}
-                            className="px-2 py-1 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200 transition disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
-                            title="Increase by 1"
-                          >
-                            +1
-                          </button>
-                          <button
-                            onClick={() => updateStock(product.id, 10, parseFloat(product.stockQty))}
-                            disabled={updatingStockId === product.id}
-                            className="px-2 py-1 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200 transition disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
-                            title="Increase by 10"
-                          >
-                            +10
-                          </button>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-slate-900 truncate">{product.name}</h3>
+                          <p className="text-sm text-slate-500">{product.category}</p>
+                          <p className="text-lg font-bold text-slate-900 mt-1">
+                            {formatPrice(product.price)}
+                          </p>
                         </div>
                       </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={product.isActive}
-                          onChange={() => toggleActive(product.id, product.isActive)}
-                          className="sr-only peer"
-                        />
-                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                      </label>
-                    </td>
+                      <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+                        <div className="text-sm">
+                          <span className="text-slate-600">Stock: </span>
+                          <span className="font-medium">{parseFloat(product.stockQty).toFixed(2)} {product.unitType}</span>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={product.isActive}
+                            onChange={() => handleToggleActive(product.id, product.isActive)}
+                            className="sr-only peer"
+                          />
+                          <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-emerald-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                        </label>
+                      </div>
+                      <div className="flex gap-2 pt-2">
+                        <button
+                          onClick={() => handleStockUpdate(product.id, -1, parseFloat(product.stockQty))}
+                          disabled={updateStock.isPending}
+                          className="flex-1 px-3 py-2 text-xs bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition font-medium"
+                        >
+                          -1
+                        </button>
+                        <button
+                          onClick={() => handleStockUpdate(product.id, 1, parseFloat(product.stockQty))}
+                          disabled={updateStock.isPending}
+                          className="flex-1 px-3 py-2 text-xs bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition font-medium"
+                        >
+                          +1
+                        </button>
+                        <button
+                          onClick={() => router.push(`/admin/products/${product.id}`)}
+                          className="px-3 py-2 text-xs bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition font-medium"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(product.id)}
+                          disabled={deleteProduct.isPending}
+                          className="px-3 py-2 text-xs bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition font-medium"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </motion.div>
+                  ))
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Desktop: Table View */}
+            <div className="hidden sm:block overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-slate-50 border-b border-slate-200">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                      Image
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                      Name
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                      Category
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                      Price
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                      Stock
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                      Actions
+                    </th>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
+                </thead>
+                <tbody className="divide-y divide-slate-200">
+                  <AnimatePresence>
+                    {products.length === 0 ? (
+                      <tr>
+                        <td colSpan={7} className="px-6 py-12 text-center text-slate-500">
+                          No products found
+                        </td>
+                      </tr>
+                    ) : (
+                      products.map((product: Product) => (
+                        <motion.tr
+                          key={product.id}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          className="hover:bg-slate-50 transition-colors"
+                        >
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {product.imageUrl ? (
+                              <img
+                                src={product.imageUrl}
+                                alt={product.name}
+                                className="h-16 w-16 object-cover rounded-lg"
+                              />
+                            ) : (
+                              <div className="h-16 w-16 bg-slate-200 rounded-lg flex items-center justify-center text-slate-400 text-xs">
+                                No Image
+                              </div>
+                            )}
+                          </td>
+                          <td className="px-6 py-4">
+                            <button
+                              onClick={() => router.push(`/admin/products/${product.id}`)}
+                              className="text-left hover:text-emerald-600 transition-colors"
+                            >
+                              <div className="text-sm font-medium text-slate-900">{product.name}</div>
+                              {product.description && (
+                                <div className="text-sm text-slate-500 truncate max-w-xs">
+                                  {product.description}
+                                </div>
+                              )}
+                            </button>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-emerald-100 text-emerald-700">
+                              {product.category}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
+                            <span className="font-semibold">{formatPrice(product.price)}</span>
+                            <span className="text-slate-500 text-xs ml-1">
+                              / {product.unitValue} {product.unitType}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm text-slate-900 min-w-[80px]">
+                                {parseFloat(product.stockQty).toFixed(2)} {product.unitType}
+                              </span>
+                              <div className="flex gap-1">
+                                <button
+                                  onClick={() => handleStockUpdate(product.id, -10, parseFloat(product.stockQty))}
+                                  disabled={updateStock.isPending}
+                                  className="px-2 py-1 text-xs bg-red-50 text-red-700 rounded hover:bg-red-100 transition disabled:opacity-50 font-medium"
+                                  title="Decrease by 10"
+                                >
+                                  -10
+                                </button>
+                                <button
+                                  onClick={() => handleStockUpdate(product.id, -1, parseFloat(product.stockQty))}
+                                  disabled={updateStock.isPending}
+                                  className="px-2 py-1 text-xs bg-red-50 text-red-700 rounded hover:bg-red-100 transition disabled:opacity-50 font-medium"
+                                  title="Decrease by 1"
+                                >
+                                  -1
+                                </button>
+                                <button
+                                  onClick={() => handleStockUpdate(product.id, 1, parseFloat(product.stockQty))}
+                                  disabled={updateStock.isPending}
+                                  className="px-2 py-1 text-xs bg-emerald-50 text-emerald-700 rounded hover:bg-emerald-100 transition disabled:opacity-50 font-medium"
+                                  title="Increase by 1"
+                                >
+                                  +1
+                                </button>
+                                <button
+                                  onClick={() => handleStockUpdate(product.id, 10, parseFloat(product.stockQty))}
+                                  disabled={updateStock.isPending}
+                                  className="px-2 py-1 text-xs bg-emerald-50 text-emerald-700 rounded hover:bg-emerald-100 transition disabled:opacity-50 font-medium"
+                                  title="Increase by 10"
+                                >
+                                  +10
+                                </button>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <label className="relative inline-flex items-center cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={product.isActive}
+                                onChange={() => handleToggleActive(product.id, product.isActive)}
+                                className="sr-only peer"
+                              />
+                              <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-emerald-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                            </label>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              <button
+                                onClick={() => router.push(`/admin/products/${product.id}`)}
+                                className="text-emerald-600 hover:text-emerald-800 text-sm font-medium"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => handleDelete(product.id)}
+                                disabled={deleteProduct.isPending}
+                                className="text-red-600 hover:text-red-800 text-sm font-medium disabled:opacity-50"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </td>
+                        </motion.tr>
+                      ))
+                    )}
+                  </AnimatePresence>
+                </tbody>
+              </table>
+            </div>
+          </motion.div>
+        )}
+      </div>
+    </motion.div>
   );
 }
-
