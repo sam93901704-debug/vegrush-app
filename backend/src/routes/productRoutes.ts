@@ -45,13 +45,13 @@ router.get(
 /**
  * GET /api/admin/products
  * Admin route - List all products (including inactive) with pagination and filters
+ * TEMPORARILY DISABLED AUTH - Making route public for testing
  * Query params: page, limit, category, search, inStockOnly
- * TEMPORARILY DISABLED AUTH - Making route public for dev
  */
 router.get(
   '/',
   // authenticateUser, // TEMPORARILY COMMENTED OUT
-  // requireRole(['admin']), // TEMPORARILY COMMENTED OUT
+  // adminAuth, // TEMPORARILY COMMENTED OUT
   validateRequest({
     query: [
       query('page')
@@ -88,11 +88,12 @@ router.get(
 /**
  * POST /api/admin/products
  * Protected route (admin only) - Create new product
+ * TEMPORARILY DISABLED AUTH - Making route public for testing
  */
 router.post(
   '/',
-  authenticateUser,
-  adminAuth,
+  // authenticateUser, // TEMPORARILY COMMENTED OUT
+  // adminAuth, // TEMPORARILY COMMENTED OUT
   validateRequest({
     body: [
       body('name')
@@ -148,12 +149,13 @@ router.post(
 /**
  * PATCH /api/admin/products/:id/stock
  * Protected route (admin only) - Update product stock quantity only
+ * TEMPORARILY DISABLED AUTH - Making route public for testing
  * Must come before /:id route to avoid route conflicts
  */
 router.patch(
   '/:id/stock',
-  authenticateUser,
-  adminAuth,
+  // authenticateUser, // TEMPORARILY COMMENTED OUT
+  // adminAuth, // TEMPORARILY COMMENTED OUT
   validateRequest({
     params: [param('id').notEmpty().withMessage('Product ID is required')],
     body: [
@@ -168,11 +170,12 @@ router.patch(
 /**
  * PUT /api/admin/products/:id
  * Protected route (admin only) - Update product
+ * TEMPORARILY DISABLED AUTH - Making route public for testing
  */
 router.put(
   '/:id',
-  authenticateUser,
-  adminAuth,
+  // authenticateUser, // TEMPORARILY COMMENTED OUT
+  // adminAuth, // TEMPORARILY COMMENTED OUT
   validateRequest({
     params: [param('id').notEmpty().withMessage('Product ID is required')],
     body: [
@@ -235,12 +238,13 @@ router.put(
 /**
  * DELETE /api/admin/products/:id
  * Protected route (admin only) - Delete product (optional)
+ * TEMPORARILY DISABLED AUTH - Making route public for testing
  * Query param: hardDelete=true for hard delete, default is soft delete
  */
 router.delete(
   '/:id',
-  authenticateUser,
-  adminAuth,
+  // authenticateUser, // TEMPORARILY COMMENTED OUT
+  // adminAuth, // TEMPORARILY COMMENTED OUT
   validateRequest({
     params: [param('id').notEmpty().withMessage('Product ID is required')],
     query: [
