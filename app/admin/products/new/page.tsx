@@ -96,19 +96,11 @@ export default function NewProductPage() {
 
     setUploadingImage(true);
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('Authentication required');
-      }
-
       const formData = new FormData();
       formData.append('image', selectedFile);
 
       const response = await fetch(`${API_URL}/api/admin/upload-product-image`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
         body: formData,
       });
 
@@ -118,8 +110,12 @@ export default function NewProductPage() {
       }
 
       const data = await response.json();
+      if (!data.url) {
+        throw new Error('No URL returned from upload');
+      }
       return data.url;
     } catch (error) {
+      console.error('Image upload error:', error);
       throw error;
     } finally {
       setUploadingImage(false);

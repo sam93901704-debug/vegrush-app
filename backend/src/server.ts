@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 import pino from 'pino';
 import { errorHandler } from './middleware/errorHandler';
+import { validateSupabaseConfig } from './utils/supabaseClient';
 import authRoutes from './routes/authRoutes';
 import productRoutes from './routes/products';
 import orderRoutes from './routes/orders';
@@ -19,6 +20,33 @@ import userRoutes from './routes/userRoutes';
 
 // Load environment variables
 dotenv.config();
+
+// Validate required environment variables
+function validateEnvVars(): void {
+  const required = ['DATABASE_URL', 'JWT_SECRET'];
+  const missing: string[] = [];
+
+  required.forEach((varName) => {
+    if (!process.env[varName]) {
+      missing.push(varName);
+    }
+  });
+
+  if (missing.length > 0) {
+    console.error('❌ Missing required environment variables:', missing.join(', '));
+    throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
+  }
+
+  // Validate Supabase config (optional but recommended for image uploads)
+  try {
+    validateSupabaseConfig();
+    console.log('✅ Supabase configuration validated');
+  } catch (error) {
+    console.warn('⚠️ Supabase configuration missing - image uploads will not work');
+  }
+}
+
+validateEnvVars();
 
 // Initialize logger
 const logger = pino({

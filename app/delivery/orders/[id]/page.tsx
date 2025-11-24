@@ -312,19 +312,11 @@ export default function DeliveryOrderDetailPage() {
     // Upload photo if provided
     if (deliveryPhoto) {
       try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          throw new Error('Authentication required');
-        }
-
         const formData = new FormData();
         formData.append('image', deliveryPhoto);
 
         const uploadResponse = await fetch(`${API_URL}/api/admin/upload-product-image`, {
           method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
           body: formData,
         });
 
