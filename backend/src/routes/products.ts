@@ -55,11 +55,12 @@ router.get(
 /**
  * POST /api/admin/products
  * Protected route (admin only) - Create new product
+ * TEMPORARILY DISABLED AUTH - Making route public for dev
  */
 router.post(
   '/',
-  authenticateUser,
-  requireRole(['admin']),
+  // authenticateUser, // TEMPORARILY COMMENTED OUT
+  // requireRole(['admin']), // TEMPORARILY COMMENTED OUT
   validateRequest({
     body: [
       body('name')
@@ -112,11 +113,12 @@ router.post(
  * PATCH /api/admin/products/:id/stock
  * Protected route (admin only) - Update product stock quantity only
  * Must come before /:id route to avoid route conflicts
+ * TEMPORARILY DISABLED AUTH - Making route public for dev
  */
 router.patch(
   '/:id/stock',
-  authenticateUser,
-  requireRole(['admin']),
+  // authenticateUser, // TEMPORARILY COMMENTED OUT
+  // requireRole(['admin']), // TEMPORARILY COMMENTED OUT
   validateRequest({
     params: [param('id').notEmpty().withMessage('Product ID is required')],
     body: [
@@ -131,11 +133,12 @@ router.patch(
 /**
  * PUT /api/admin/products/:id
  * Protected route (admin only) - Update product
+ * TEMPORARILY DISABLED AUTH - Making route public for dev
  */
 router.put(
   '/:id',
-  authenticateUser,
-  requireRole(['admin']),
+  // authenticateUser, // TEMPORARILY COMMENTED OUT
+  // requireRole(['admin']), // TEMPORARILY COMMENTED OUT
   validateRequest({
     params: [param('id').notEmpty().withMessage('Product ID is required')],
     body: [

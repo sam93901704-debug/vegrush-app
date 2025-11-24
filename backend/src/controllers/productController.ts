@@ -68,10 +68,18 @@ export const getProductById = async (req: Request, res: Response): Promise<void>
  */
 export const createProduct = async (req: Request, res: Response): Promise<void> => {
   try {
+    console.log('[POST /api/admin/products] Request received:', {
+      method: req.method,
+      url: req.url,
+      body: req.body,
+      headers: req.headers,
+    });
+    
     const productData = req.body;
 
     const product = await productService.createProduct(productData);
 
+    console.log('[POST /api/admin/products] Product created successfully:', product.id);
     res.status(201).json(product);
   } catch (error) {
     // Re-throw to be handled by global error handler
