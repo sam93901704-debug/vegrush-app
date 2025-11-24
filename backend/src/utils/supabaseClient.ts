@@ -41,6 +41,10 @@ let supabaseClient: SupabaseClient | null = null;
 
 export function getSupabaseClient(): SupabaseClient {
   if (!supabaseClient) {
+    console.log(">>> RUNTIME SUPABASE_URL =", JSON.stringify(process.env.SUPABASE_URL));
+console.log(">>> RUNTIME SERVICE_ROLE_KEY EXISTS =", !!process.env.SUPABASE_SERVICE_ROLE_KEY);
+console.log(">>> RUNTIME BUCKET =", process.env.SUPABASE_BUCKET);
+
     const url = getSupabaseUrl();
     const key = getSupabaseServiceRoleKey();
     supabaseClient = createClient(url, key, {
