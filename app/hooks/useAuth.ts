@@ -220,13 +220,13 @@ export function useAuth() {
 
   // Admin login mutation
   const adminLoginMutation = useMutation({
-    mutationFn: async ({ username, password }: { username: string; password: string }) => {
+    mutationFn: async ({ email, password }: { email: string; password: string }) => {
       const response = await fetch(`${API_URL}/api/auth/admin/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ email, password }),
       });
 
       if (!response.ok) {

@@ -10,7 +10,7 @@ export default function AdminLoginPage() {
   const router = useRouter();
   const { adminLogin, isAdminLoggingIn } = useAuth();
   const [formData, setFormData] = useState({
-    username: '',
+    email: '',
     password: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -18,14 +18,20 @@ export default function AdminLoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.username || !formData.password) {
-      setErrors({ username: 'Username and password are required' });
+    if (!formData.email || !formData.password) {
+      setErrors({ email: 'Email and password are required' });
+      return;
+    }
+
+    // Validate email format
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      setErrors({ email: 'Please enter a valid email address' });
       return;
     }
 
     try {
       await adminLogin({
-        username: formData.username,
+        email: formData.email,
         password: formData.password,
       });
 
@@ -33,7 +39,7 @@ export default function AdminLoginPage() {
       router.push('/admin');
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Admin login failed');
-      setErrors({ username: error instanceof Error ? error.message : 'Invalid credentials' });
+      setErrors({ email: error instanceof Error ? error.message : 'Invalid credentials' });
     }
   };
 
@@ -59,23 +65,23 @@ export default function AdminLoginPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Username */}
+          {/* Email */}
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">
-              Username <span className="text-red-500">*</span>
+              Email <span className="text-red-500">*</span>
             </label>
             <input
-              type="text"
-              value={formData.username}
-              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+              type="email"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent ${
-                errors.username ? 'border-red-300' : 'border-slate-300'
+                errors.email ? 'border-red-300' : 'border-slate-300'
               }`}
-              placeholder="Enter username"
+              placeholder="admin@example.com"
               required
             />
-            {errors.username && (
-              <p className="mt-1 text-sm text-red-600">{errors.username}</p>
+            {errors.email && (
+              <p className="mt-1 text-sm text-red-600">{errors.email}</p>
             )}
           </div>
 

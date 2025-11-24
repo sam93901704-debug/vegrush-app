@@ -12,19 +12,21 @@ async function main() {
     console.log('✅ Connected to database\n');
 
     // Hash password with bcrypt (10 salt rounds)
-    const plainPassword = 'Admin@123';
+    const plainPassword = 'Sameer@123';
     const hashedPassword = await bcrypt.hash(plainPassword, 10);
     console.log('✅ Password hashed\n');
 
     // Create or update admin user (idempotent)
     console.log('👤 Creating/updating admin user...');
     const adminUser = await prisma.adminUser.upsert({
-      where: { username: 'admin' },
+      where: { email: 'sam93901704@gmail.com' },
       update: {
         password: hashedPassword,
         role: 'admin',
+        username: 'admin', // Keep username for backward compatibility
       },
       create: {
+        email: 'sam93901704@gmail.com',
         username: 'admin',
         password: hashedPassword,
         role: 'admin',
@@ -32,7 +34,8 @@ async function main() {
     });
 
     console.log(`✅ Admin user created/updated successfully!`);
-    console.log(`   Username: ${adminUser.username}`);
+    console.log(`   Email: ${adminUser.email || 'N/A'}`);
+    console.log(`   Username: ${adminUser.username || 'N/A'}`);
     console.log(`   Role: ${adminUser.role}`);
     console.log(`   ID: ${adminUser.id}\n`);
 

@@ -179,20 +179,20 @@ router.post(
 
 /**
  * POST /auth/admin/login
- * Authenticate admin user with username and password
+ * Authenticate admin user with email and password
  * 
- * Body: { username: string, password: string }
+ * Body: { email: string, password: string }
  * Returns: { success: true, admin: AdminUserResponse, token: string }
  */
 router.post(
   '/admin/login',
   validateRequest({
     body: [
-      body('username')
+      body('email')
         .notEmpty()
-        .withMessage('Username is required')
-        .isString()
-        .withMessage('Username must be a string')
+        .withMessage('Email is required')
+        .isEmail()
+        .withMessage('Email must be a valid email address')
         .trim(),
       body('password')
         .notEmpty()

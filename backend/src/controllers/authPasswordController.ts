@@ -230,34 +230,32 @@ type AdminUserResponse = {
 
 /**
  * POST /api/auth/admin/login
- * Authenticate admin user with username and password
+ * Authenticate admin user with email and password
  * 
- * Body: { username: string, password: string }
+ * Body: { email: string, password: string }
  * Returns: { admin: AdminUserResponse, token: string }
  */
 export const adminLogin = async (req: Request, res: Response): Promise<void> => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
 
-  if (!username || !password) {
+  if (!email || !password) {
     res.status(400).json({
       error: true,
-      message: 'Username and password are required',
+      message: 'Email and password are required',
     });
     return;
   }
 
   try {
-    // Find admin user by username
-    // Note: Prisma client needs to be regenerated after schema change
-    // For now, use findFirst as workaround
+    // Find admin user by email
     const adminUser = await db.adminUser.findFirst({
       where: {
-        username: username,
+        email: email,
       },
     });
 
     if (!adminUser) {
-      logger.warn({ username }, 'Admin login attempt with non-existent username');
+      logger.warn({ email }, 'Admin login attempt with non-existent email');
       res.status(401).json({
         error: true,
         message: 'Invalid credentials',
@@ -293,12 +291,12 @@ export const adminLogin = async (req: Request, res: Response): Promise<void> => 
       role: 'admin',
     });
 
-    logger.info({ adminId: adminUser.id, username }, 'Admin logged in');
+    logger.info({ adminId: adminUser.id, email }, 'Admin logged in');
 
     // Return response
     const adminResponse: AdminUserResponse = {
       id: adminUser.id,
-      username: (adminUser as any).username || '',
+      username: (adminUser as any).username || email.split('@')[0],
       email: adminUser.email ?? null,
       role: adminUser.role,
     };
