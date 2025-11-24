@@ -94,7 +94,7 @@ async function main() {
 
     // Seed AdminUser
     console.log('👤 Creating admin user...');
-    const adminUser = await prisma.adminUser.upsert({
+    const adminUser = await (prisma.adminUser as any).upsert({
       where: { email: 'admin@example.com' },
       update: {
         googleId: 'google_admin_placeholder_123',

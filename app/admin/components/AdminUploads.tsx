@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { API_URL } from '@/config/api';
+import { apiFetch } from '@/utils/apiFetch';
 import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
 
@@ -18,7 +18,7 @@ export default function AdminUploads() {
       const formData = new FormData();
       formData.append('image', file);
 
-      const response = await fetch(`${API_URL}/api/admin/upload-product-image`, {
+      const response = await apiFetch('/api/admin/upload-product-image', {
         method: 'POST',
         body: formData,
       });

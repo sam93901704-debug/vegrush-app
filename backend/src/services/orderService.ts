@@ -360,6 +360,6 @@ export async function transitionOrder(
     );
   }
 
-  return updatedOrder;
+  return updatedOrder as any;
 }
 

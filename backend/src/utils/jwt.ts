@@ -56,18 +56,34 @@ function getJwtSecret(): string {
  * const token = signJwt({ userId: '123', email: 'user@example.com', googleId: 'google_123' });
  * ```
  */
+/**
+ * Sign a JWT token with the given payload
+ * 
+ * @param payload - Token payload to sign (must include id and role)
+ * @param expiresIn - Token expiration time (default: from env JWT_EXPIRES_IN or '7d')
+ * @returns Signed JWT token string
+ * @throws Error if JWT_SECRET is not configured or signing fails
+ * 
+ * @example
+ * ```ts
+ * const token = signJwt({ userId: '123', role: 'customer' });
+ * ```
+ */
 export function signJwt<T extends BaseJwtPayload>(
   payload: Omit<T, 'iat' | 'exp'>,
-  expiresIn: string = '7d'
+  expiresIn?: string
 ): string {
   try {
     const secret = getJwtSecret();
+    // Use JWT_EXPIRES_IN from env or default to 7d
+    const tokenExpiresIn = expiresIn || process.env.JWT_EXPIRES_IN || '7d';
+    
     const token = jwt.sign(
       payload as object,
       secret,
       {
-        expiresIn,
-        issuer: 'your-app',
+        expiresIn: tokenExpiresIn,
+        issuer: 'vegrush',
       } as SignOptions
     );
     return token;
@@ -100,7 +116,7 @@ export function verifyJwt<T extends JwtPayload = JwtPayload>(token: string): T {
   try {
     const secret = getJwtSecret();
     const decoded = jwt.verify(token, secret, {
-      issuer: 'your-app',
+      issuer: 'vegrush',
     }) as T;
 
     return decoded;

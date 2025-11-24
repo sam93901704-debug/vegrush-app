@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { API_URL } from '@/config/api';
+import { apiFetch } from '@/utils/apiFetch';
 import type { Product, ProductsResponse } from './useProducts';
 
 interface FetchAdminProductsParams {
@@ -22,7 +23,7 @@ export function useAdminProducts(params: FetchAdminProductsParams = {}) {
       if (params.search) searchParams.append('search', params.search);
       if (params.inStockOnly) searchParams.append('inStockOnly', 'true');
 
-      const response = await fetch(`${API_URL}/api/admin/products?${searchParams.toString()}`);
+      const response = await apiFetch(`/api/admin/products?${searchParams.toString()}`);
       if (!response.ok) {
         throw new Error('Failed to fetch products');
       }
@@ -37,11 +38,8 @@ export function useUpdateStock() {
 
   return useMutation({
     mutationFn: async ({ id, stockQty }: { id: string; stockQty: number }) => {
-      const response = await fetch(`${API_URL}/api/admin/products/${id}/stock`, {
+      const response = await apiFetch(`/api/admin/products/${id}/stock`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({ stockQty }),
       });
 
@@ -68,7 +66,7 @@ export function useDeleteProduct() {
       const searchParams = new URLSearchParams();
       if (hardDelete) searchParams.append('hardDelete', 'true');
 
-      const response = await fetch(`${API_URL}/api/admin/products/${id}?${searchParams.toString()}`, {
+      const response = await apiFetch(`/api/admin/products/${id}?${searchParams.toString()}`, {
         method: 'DELETE',
       });
 

@@ -366,8 +366,16 @@ export const getOrderById = async (req: RequestWithUser, res: Response): Promise
   }
 
   // Check if user is admin
-  const adminUser = await db.adminUser.findUnique({
-    where: { email: req.user!.email },
+  const userEmail = req.user!.email;
+  if (!userEmail) {
+    res.status(403).json({
+      error: true,
+      message: 'Admin access required',
+    });
+    return;
+  }
+  const adminUser = await db.adminUser.findFirst({
+    where: { email: userEmail },
   });
 
   const isAdmin = !!adminUser && adminUser.googleId === req.user!.googleId;

@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { API_URL } from '@/config/api';
+import { apiFetch } from '@/utils/apiFetch';
 import { TableSkeleton } from '../../components/ui/Skeleton';
 import { motion } from 'framer-motion';
 
@@ -9,7 +9,7 @@ export default function AdminOrdersList() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['admin-orders'],
     queryFn: async () => {
-      const response = await fetch(`${API_URL}/api/admin/orders?limit=50`);
+      const response = await apiFetch('/api/admin/orders?limit=50');
       if (!response.ok) throw new Error('Failed to fetch orders');
       return response.json();
     },

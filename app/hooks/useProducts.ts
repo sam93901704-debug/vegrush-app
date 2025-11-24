@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { API_URL } from '@/config/api';
+import { apiFetch } from '@/utils/apiFetch';
 
 export interface Product {
   id: string;
@@ -45,7 +46,7 @@ export function useProducts(params: FetchProductsParams = {}) {
       if (params.search) searchParams.append('search', params.search);
       if (params.inStockOnly) searchParams.append('inStockOnly', 'true');
 
-      const response = await fetch(`${API_URL}/api/products?${searchParams.toString()}`);
+      const response = await apiFetch(`/api/products?${searchParams.toString()}`);
       if (!response.ok) {
         throw new Error('Failed to fetch products');
       }
@@ -59,7 +60,7 @@ export function useProduct(id: string) {
   return useQuery({
     queryKey: ['product', id],
     queryFn: async () => {
-      const response = await fetch(`${API_URL}/api/products/${id}`);
+      const response = await apiFetch(`/api/products/${id}`);
       if (!response.ok) {
         throw new Error('Failed to fetch product');
       }
@@ -85,11 +86,8 @@ export function useCreateProduct() {
       imageUrl?: string;
       isActive?: boolean;
     }) => {
-      const response = await fetch(`${API_URL}/api/admin/products`, {
+      const response = await apiFetch('/api/admin/products', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify(productData),
       });
 
@@ -128,11 +126,8 @@ export function useUpdateProduct() {
       imageUrl?: string;
       isActive?: boolean;
     }) => {
-      const response = await fetch(`${API_URL}/api/admin/products/${id}`, {
+      const response = await apiFetch(`/api/admin/products/${id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify(productData),
       });
 

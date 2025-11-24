@@ -9,13 +9,15 @@ datasource db {
 
 model User {
   id            String    @id @default(uuid())
-  googleId      String    @unique
+  googleId      String?   @unique // Optional: null for password-based users
   name          String
-  email         String    @unique
-  phone         String?   @unique
+  email         String?   @unique // Optional: can use phone instead
+  phone         String?   @unique // Optional: can use email instead
+  password      String?   // Hashed password (null for Google OAuth users)
   phoneVerified Boolean   @default(false)
   profilePic    String?
   fcmToken      String?   // FCM device token for push notifications
+  role          String    @default("customer") // customer, admin, delivery
   addresses     Address[]
   orders        Order[]
   createdAt     DateTime  @default(now())
@@ -89,12 +91,14 @@ model DeliveryBoy {
   id            String    @id @default(uuid())
   name          String
   phone         String    @unique
+  password      String?   // Hashed password (optional for now, can be null)
   vehicleNumber String?
   fcmToken      String?   // FCM device token for push notifications
   isActive      Boolean   @default(true)
   lastAssignedAt DateTime? // Timestamp of last order assignment (for round-robin)
   orders        Order[]   // Orders assigned to this delivery boy
   createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
 model AuditLog {
@@ -113,10 +117,13 @@ model AuditLog {
 
 model AdminUser {
   id        String   @id @default(uuid())
-  email     String   @unique
-  googleId  String   @unique
+  username  String   @unique // Username for password-based login
+  email     String?  @unique // Optional: for Google OAuth
+  googleId  String?  @unique // Optional: null for password-based admins
+  password  String?  // Hashed password (null for Google OAuth admins)
   role      String   @default("admin")
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Setting {

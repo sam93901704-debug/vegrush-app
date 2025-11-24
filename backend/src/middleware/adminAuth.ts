@@ -24,8 +24,16 @@ export const adminAuth = async (
     }
 
     // Check if user is an admin
-    const adminUser = await db.adminUser.findUnique({
-      where: { email: req.user.email },
+    const userEmail = req.user.email;
+    if (!userEmail) {
+      res.status(403).json({
+        error: true,
+        message: 'Admin access required',
+      });
+      return;
+    }
+    const adminUser = await db.adminUser.findFirst({
+      where: { email: userEmail },
     });
 
     if (!adminUser) {
@@ -36,8 +44,10 @@ export const adminAuth = async (
       return;
     }
 
-    // Verify googleId matches
-    if (adminUser.googleId !== req.user.googleId) {
+    // Verify googleId matches (if both exist)
+    const userGoogleId = req.user.googleId;
+    const adminGoogleId = adminUser.googleId;
+    if (userGoogleId && adminGoogleId && adminGoogleId !== userGoogleId) {
       res.status(403).json({
         error: true,
         message: 'Admin access denied',

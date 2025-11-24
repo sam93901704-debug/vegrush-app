@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useCreateProduct } from '../../hooks/useProducts';
-import { API_URL } from '@/config/api';
+import { apiFetch } from '@/utils/apiFetch';
 import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
 
@@ -69,7 +69,7 @@ export default function AdminProductForm({ onSuccess }: AdminProductFormProps) {
       const formDataObj = new FormData();
       formDataObj.append('image', selectedFile);
 
-      const response = await fetch(`${API_URL}/api/admin/upload-product-image`, {
+      const response = await apiFetch('/api/admin/upload-product-image', {
         method: 'POST',
         body: formDataObj,
       });

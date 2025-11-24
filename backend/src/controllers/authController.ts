@@ -51,20 +51,21 @@ export const googleLogin = async (req: Request, res: Response): Promise<void> =>
   let user;
   try {
     user = await db.user.upsert({
-      where: { googleId },
+      where: { googleId: googleId! },
       update: {
         name,
-        email,
+        email: email!,
         profilePic: picture,
         // Don't update googleId (it's the unique key)
       },
       create: {
-        googleId,
+        googleId: googleId!,
         name,
-        email,
+        email: email!,
         profilePic: picture,
         phone: null,
         phoneVerified: false,
+        role: 'customer',
       },
     });
   } catch (error) {
@@ -89,7 +90,7 @@ export const googleLogin = async (req: Request, res: Response): Promise<void> =>
   const userResponse: UserResponse = {
     id: user.id,
     name: user.name,
-    email: user.email,
+    email: user.email ?? '',
     phone: user.phone,
     profilePic: user.profilePic,
     phoneVerified: user.phoneVerified,
@@ -120,7 +121,7 @@ export const getCurrentUser = async (req: RequestWithUser, res: Response): Promi
   const userResponse: UserResponse = {
     id: user.id,
     name: user.name,
-    email: user.email,
+    email: user.email ?? '',
     phone: user.phone,
     profilePic: user.profilePic,
     phoneVerified: user.phoneVerified,
@@ -209,8 +210,8 @@ export const adminGoogleLogin = async (req: Request, res: Response): Promise<voi
   // Step 5: Return admin token and admin user details
   const adminResponse: AdminUserResponse = {
     id: adminUser.id,
-    email: adminUser.email,
-    googleId: adminUser.googleId,
+    email: adminUser.email ?? '',
+    googleId: adminUser.googleId ?? '',
     role: adminUser.role,
   };
 

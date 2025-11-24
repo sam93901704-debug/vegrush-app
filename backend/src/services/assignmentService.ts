@@ -88,7 +88,7 @@ export async function autoAssign(
       id: string;
       name: string;
       phone: string | null;
-      email: string;
+      email: string | null;
     };
     address: {
       id: string;
@@ -107,7 +107,7 @@ export async function autoAssign(
 }> {
   // Use Prisma transaction to ensure atomic assignment
   return await db.$transaction(
-    async (tx) => {
+    async (tx): Promise<any> => {
       // Get order (locked for update)
       const order = await tx.order.findUnique({
         where: { id: orderId },
@@ -356,7 +356,7 @@ export async function manualAssign(
 }> {
   // Use Prisma transaction to ensure atomic assignment
   return await db.$transaction(
-    async (tx) => {
+    async (tx): Promise<any> => {
       // Get order (locked for update)
       const order = await tx.order.findUnique({
         where: { id: orderId },

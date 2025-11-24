@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { useAdminProducts } from '../../hooks/useAdminProducts';
-import { API_URL } from '@/config/api';
+import { apiFetch } from '@/utils/apiFetch';
 import { motion } from 'framer-motion';
 
 interface Stats {
@@ -37,7 +37,7 @@ export default function AdminDashboard() {
   const { data: ordersData, isLoading: ordersLoading } = useQuery({
     queryKey: ['admin-orders-today'],
     queryFn: async () => {
-      const response = await fetch(`${API_URL}/api/admin/orders?limit=100`);
+      const response = await apiFetch('/api/admin/orders?limit=100');
       if (!response.ok) throw new Error('Failed to fetch orders');
       return response.json();
     },

@@ -157,10 +157,11 @@ export const authenticateUser = async (
   }
 
   // Step 5 & 6: Attach user to request with role from JWT payload
+  // Type assertion needed because Prisma types may not include role yet
   req.user = {
     ...user,
     role: payload.role,
-  };
+  } as any;
 
   // Step 7: Call next()
   next();

@@ -7,6 +7,7 @@ import { useAdminProducts } from '../hooks/useAdminProducts';
 import { useCreateProduct, useUpdateProduct } from '../hooks/useProducts';
 import { SearchBar } from '../components/ui/SearchBar';
 import { ProductListSkeleton, TableSkeleton } from '../components/ui/Skeleton';
+import { AuthGuard } from '../components/AuthGuard';
 import toast from 'react-hot-toast';
 import { API_URL } from '@/config/api';
 
@@ -36,7 +37,8 @@ export default function AdminPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <AuthGuard requiredRole="admin">
+      <div className="min-h-screen bg-slate-50">
       {/* Header */}
       <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -150,5 +152,6 @@ export default function AdminPage() {
         </Tab.Group>
       </main>
     </div>
+    </AuthGuard>
   );
 }
