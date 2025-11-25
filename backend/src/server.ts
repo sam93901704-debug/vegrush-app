@@ -7,6 +7,7 @@ import rateLimit from 'express-rate-limit';
 import pino from 'pino';
 import { errorHandler } from './middleware/errorHandler';
 import { validateSupabaseConfig } from './utils/supabaseClient';
+import { ensureDefaultAdmin } from './utils/adminSeeder';
 import authRoutes from './routes/authRoutes';
 import productRoutes from './routes/products';
 import orderRoutes from './routes/orders';
@@ -67,9 +68,10 @@ const allowedOrigins = [
   'http://127.0.0.1:3001',
   // Vercel preview and production domains
   /^https:\/\/.*\.vercel\.app$/,
-  // Add your production domain here
-  // 'https://yourdomain.com',
-];
+  // Production domains - add your actual Vercel domain here
+  process.env.FRONTEND_URL,
+  process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` : undefined,
+].filter(Boolean) as (string | RegExp)[];
 
 app.use(
   cors({
@@ -172,9 +174,12 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 4000;
 
 // Start the server (this is the entry point)
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, async () => {
   logger.info(`🚀 Server running on port ${PORT}`);
   logger.info(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
+  
+  // Ensure default admin user exists
+  await ensureDefaultAdmin();
 });
 
 // Graceful shutdown

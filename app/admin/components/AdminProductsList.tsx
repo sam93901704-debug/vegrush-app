@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAdminProducts, useUpdateStock, useDeleteProduct } from '../../hooks/useAdminProducts';
 import { ProductListSkeleton } from '../../components/ui/Skeleton';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -12,6 +13,7 @@ interface AdminProductsListProps {
 }
 
 export default function AdminProductsList({ searchQuery }: AdminProductsListProps) {
+  const router = useRouter();
   const { data, isLoading, error } = useAdminProducts({
     search: searchQuery || undefined,
     limit: 100,
@@ -125,6 +127,12 @@ export default function AdminProductsList({ searchQuery }: AdminProductsListProp
                       }}
                       className="flex-1 px-2 py-1 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     />
+                    <button
+                      onClick={() => router.push(`/admin/products/${product.id}/edit`)}
+                      className="px-3 py-1 text-xs bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition font-medium"
+                    >
+                      Edit
+                    </button>
                     <button
                       onClick={() => handleDelete(product.id)}
                       className="px-3 py-1 text-xs bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition font-medium"

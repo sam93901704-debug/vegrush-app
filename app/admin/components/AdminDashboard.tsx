@@ -37,9 +37,7 @@ export default function AdminDashboard() {
   const { data: ordersData, isLoading: ordersLoading } = useQuery({
     queryKey: ['admin-orders-today'],
     queryFn: async () => {
-      const response = await apiFetch('/api/admin/orders?limit=100');
-      if (!response.ok) throw new Error('Failed to fetch orders');
-      return response.json();
+      return await apiFetch('/api/admin/orders?limit=100');
     },
   });
 

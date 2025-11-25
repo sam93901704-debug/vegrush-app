@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { CartProvider } from './store/cartContext';
 import { QueryProvider } from './providers/QueryProvider';
+import { AuthProvider } from './providers/AuthProvider';
 import { Toaster } from './providers/Toaster';
 import CartButton from './customer/components/CartButton';
 import FcmRegistration from './components/FcmRegistration';
@@ -37,12 +38,14 @@ export default function RootLayout({
     <html lang="en">
       <body className="font-sans antialiased">
         <QueryProvider>
-          <CartProvider>
-            {children}
-            <CartButton />
-            <FcmRegistration />
-            <Toaster />
-          </CartProvider>
+          <AuthProvider>
+            <CartProvider>
+              {children}
+              <CartButton />
+              <FcmRegistration />
+              <Toaster />
+            </CartProvider>
+          </AuthProvider>
         </QueryProvider>
       </body>
     </html>

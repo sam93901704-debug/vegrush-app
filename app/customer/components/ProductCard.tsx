@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 
 interface Product {
@@ -21,6 +22,15 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, onClick }: ProductCardProps) {
+  const router = useRouter();
+
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    } else {
+      router.push(`/customer/products/${product.id}`);
+    }
+  };
   const formatPrice = (paise: number) => {
     return `₹${(paise / 100).toFixed(2)}`;
   };
@@ -29,7 +39,7 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
 
   return (
     <motion.div
-      onClick={onClick}
+      onClick={handleClick}
       whileHover={{ y: -4 }}
       whileTap={{ scale: 0.98 }}
       className="bg-white rounded-xl shadow-sm hover:shadow-lg border border-slate-200 overflow-hidden cursor-pointer group transition-all duration-300"
