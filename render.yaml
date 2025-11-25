@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: vegrush-backend
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install && npx prisma generate && npm run build
+    startCommand: npm start
+    rootDir: backend
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 4000
+      # Add these in Render Dashboard - Environment Variables section:
+      # DATABASE_URL - PostgreSQL connection string
+      # JWT_SECRET - Secret key for JWT tokens
+      # GOOGLE_CLIENT_ID - Google OAuth client ID
+      # SUPABASE_URL - Supabase project URL (optional)
+      # SUPABASE_KEY - Supabase anon key (optional)
+      # FRONTEND_URL - Frontend application URL
+
