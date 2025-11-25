@@ -230,32 +230,32 @@ type AdminUserResponse = {
 
 /**
  * POST /api/auth/admin/login
- * Authenticate admin user with email and password
+ * Authenticate admin user with username and password
  * 
- * Body: { email: string, password: string }
+ * Body: { username: string, password: string }
  * Returns: { admin: AdminUserResponse, token: string }
  */
 export const adminLogin = async (req: Request, res: Response): Promise<void> => {
-  const { email, password } = req.body;
+  const { username, password } = req.body;
 
-  if (!email || !password) {
+  if (!username || !password) {
     res.status(400).json({
       error: true,
-      message: 'Email and password are required',
+      message: 'Username and password are required',
     });
     return;
   }
 
   try {
-    // Find admin user by email
-    const adminUser = await db.adminUser.findFirst({
+    // Find admin user by username
+    const adminUser = await db.adminUser.findUnique({
       where: {
-        email: email,
+        username: username,
       },
     });
 
     if (!adminUser) {
-      logger.warn({ email }, 'Admin login attempt with non-existent email');
+      logger.warn({ username }, 'Admin login attempt with non-existent username');
       res.status(401).json({
         error: true,
         message: 'Invalid credentials',
@@ -291,12 +291,12 @@ export const adminLogin = async (req: Request, res: Response): Promise<void> => 
       role: 'admin',
     });
 
-    logger.info({ adminId: adminUser.id, email }, 'Admin logged in');
+    logger.info({ adminId: adminUser.id, username }, 'Admin logged in');
 
     // Return response
     const adminResponse: AdminUserResponse = {
       id: adminUser.id,
-      username: (adminUser as any).username || email.split('@')[0],
+      username: adminUser.username,
       email: adminUser.email ?? null,
       role: adminUser.role,
     };

@@ -4,15 +4,14 @@
   "description": "Node.js backend with TypeScript",
   "main": "dist/server.js",
   "scripts": {
-  "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-  "build": "tsc",
-  "start": "node dist/server.js",
-  "prisma:generate": "prisma generate",
-  "prisma:migrate": "prisma migrate deploy",
-  "prisma:migrate:seed": "prisma migrate deploy && npm run seed",
-  "seed": "ts-node prisma/seed.ts",
-    "postinstall": "prisma generate"
-},
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "prisma:generate": "npx prisma generate",
+    "prisma:migrate": "npx prisma migrate deploy",
+    "seed": "ts-node prisma/seed.ts",
+    "postinstall": "npx prisma generate"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

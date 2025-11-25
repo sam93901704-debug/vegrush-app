@@ -9,15 +9,15 @@ datasource db {
 
 model User {
   id            String    @id @default(uuid())
-  googleId      String?   @unique // Optional: null for password-based users
-  name          String
-  email         String?   @unique // Optional: can use phone instead
-  phone         String?   @unique // Optional: can use email instead
-  password      String?   // Hashed password (null for Google OAuth users)
+  name          String?
+  email         String?   @unique
+  phone         String?   @unique
+  password      String?
+  role          String    @default("CUSTOMER")
+  googleId      String?   @unique // Optional: for Google OAuth
   phoneVerified Boolean   @default(false)
   profilePic    String?
   fcmToken      String?   // FCM device token for push notifications
-  role          String    @default("customer") // customer, admin, delivery
   addresses     Address[]
   orders        Order[]
   createdAt     DateTime  @default(now())
