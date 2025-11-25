@@ -1,6 +1,8 @@
-import prisma from '../prisma/client';
+import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import pino from 'pino';
+
+const prisma = new PrismaClient();
 
 const logger = pino();
 
