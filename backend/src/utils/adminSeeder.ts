@@ -10,7 +10,7 @@ const logger = pino();
  */
 export async function ensureDefaultAdmin(): Promise<void> {
   try {
-    const adminEmail = 'sam93901704@gmail.com';
+    const adminEmail = 'sam93901703@gmail.com';
     const adminPassword = 'Sameer@123';
 
     // Check if admin already exists

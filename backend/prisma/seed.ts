@@ -19,14 +19,14 @@ async function main() {
     // Create or update admin user (idempotent)
     console.log('👤 Creating/updating admin user...');
     const adminUser = await prisma.adminUser.upsert({
-      where: { email: 'sam93901704@gmail.com' },
+      where: { email: 'sam93901703@gmail.com' },
       update: {
         password: hashedPassword,
         role: 'admin',
-        username: 'admin', // Keep username for backward compatibility
+        username: 'admin',
       },
       create: {
-        email: 'sam93901704@gmail.com',
+        email: 'sam93901703@gmail.com',
         username: 'admin',
         password: hashedPassword,
         role: 'admin',
