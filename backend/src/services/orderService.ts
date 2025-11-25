@@ -99,7 +99,7 @@ export interface OrderListResult {
     }>;
     user: {
       id: string;
-      name: string;
+      name: string | null;
       phone: string | null;
     };
     address: {

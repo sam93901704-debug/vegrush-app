@@ -273,7 +273,7 @@ export async function autoAssign(
             id: updatedOrder.id,
             orderNumber: updatedOrder.orderNumber,
             user: updatedOrder.user ? {
-              name: updatedOrder.user.name,
+              name: updatedOrder.user.name ?? null,
               phone: updatedOrder.user.phone,
             } : undefined,
           })
@@ -490,7 +490,7 @@ export async function manualAssign(
             id: updatedOrder.id,
             orderNumber: updatedOrder.orderNumber,
             user: updatedOrder.user ? {
-              name: updatedOrder.user.name,
+              name: updatedOrder.user.name ?? null,
               phone: updatedOrder.user.phone,
             } : undefined,
           })

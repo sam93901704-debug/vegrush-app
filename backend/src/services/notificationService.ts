@@ -228,7 +228,7 @@ async function sendSMS(phone: string | null, message: string): Promise<void> {
  */
 export async function notifyDeliveryAssigned(
   deliveryBoy: { id: string; name: string; phone: string; fcmToken: string | null },
-  order: { id: string; orderNumber: string; user?: { name: string; phone: string | null } }
+  order: { id: string; orderNumber: string; user?: { name: string | null; phone: string | null } }
 ): Promise<void> {
   try {
     logger.info(
@@ -336,7 +336,7 @@ export async function notifyDeliveryAssigned(
  * @param status - New order status
  */
 export async function notifyUserOnStatusChange(
-  user: { id: string; name: string; phone: string | null; fcmToken?: string | null },
+  user: { id: string; name: string | null; phone: string | null; fcmToken?: string | null },
   order: { id: string; orderNumber: string; status: string; items?: Array<{ qty: unknown; product?: { name: string } }> },
   status: string
 ): Promise<void> {
@@ -484,7 +484,7 @@ export async function notifyDeliveryBoy(
         id: order.id,
         orderNumber: order.orderNumber,
         user: order.user ? {
-          name: order.user.name,
+          name: order.user.name ?? null,
           phone: order.user.phone,
         } : undefined,
       });
@@ -551,7 +551,14 @@ export async function notifyUser(
       throw new Error('Order not found');
     }
 
-    await notifyUserOnStatusChange(user, order, status);
+    await notifyUserOnStatusChange(
+      {
+        ...user,
+        name: user.name ?? null,
+      },
+      order,
+      status
+    );
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     logger.error(

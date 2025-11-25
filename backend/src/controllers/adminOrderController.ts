@@ -296,7 +296,7 @@ export const updateOrderStatus = async (req: RequestWithUser, res: Response): Pr
               id: order.id,
               orderNumber: order.orderNumber,
               user: order.user ? {
-                name: order.user.name,
+                name: order.user.name ?? null,
                 phone: order.user.phone,
               } : undefined,
             })
@@ -358,7 +358,10 @@ export const updateOrderStatus = async (req: RequestWithUser, res: Response): Pr
         if (user) {
           notificationService
             .notifyUserOnStatusChange(
-              user,
+              {
+                ...user,
+                name: user.name ?? null,
+              },
               {
                 id: order.id,
                 orderNumber: order.orderNumber,

@@ -9,7 +9,7 @@ import { RequestWithUser } from '../types';
  */
 type UserResponse = {
   id: string;
-  name: string;
+  name: string | null;
   email: string;
   phone: string | null;
   profilePic: string | null;
@@ -89,7 +89,7 @@ export const googleLogin = async (req: Request, res: Response): Promise<void> =>
   // Step 5: Return response
   const userResponse: UserResponse = {
     id: user.id,
-    name: user.name,
+    name: user.name ?? null,
     email: user.email ?? '',
     phone: user.phone,
     profilePic: user.profilePic,
@@ -120,7 +120,7 @@ export const getCurrentUser = async (req: RequestWithUser, res: Response): Promi
   // Format user response with required fields
   const userResponse: UserResponse = {
     id: user.id,
-    name: user.name,
+    name: user.name ?? null,
     email: user.email ?? '',
     phone: user.phone,
     profilePic: user.profilePic,

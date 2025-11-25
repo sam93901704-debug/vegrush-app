@@ -331,7 +331,10 @@ export const updateDeliveryOrderStatus = async (req: RequestWithUser, res: Respo
       if (user) {
         notificationService
           .notifyUserOnStatusChange(
-            user,
+            {
+              ...user,
+              name: user.name ?? null,
+            },
             {
               id: updatedOrder.id,
               orderNumber: updatedOrder.orderNumber,

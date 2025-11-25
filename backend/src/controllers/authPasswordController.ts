@@ -11,7 +11,7 @@ const logger = pino();
  */
 type UserResponse = {
   id: string;
-  name: string;
+  name: string | null;
   email: string | null;
   phone: string | null;
   role: string;
@@ -111,7 +111,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     // Return response (exclude password)
     const userResponse: UserResponse = {
       id: user.id,
-      name: user.name,
+      name: user.name ?? null,
       email: user.email ?? null,
       phone: user.phone ?? null,
       role: (user as any).role || 'customer',
@@ -201,7 +201,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     // Return response
     const userResponse: UserResponse = {
       id: user.id,
-      name: user.name,
+      name: user.name ?? null,
       email: user.email ?? null,
       phone: user.phone ?? null,
       role: userRole,
