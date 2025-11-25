@@ -1,0 +1,938 @@
+{
+  "tech_stack": [
+    "TypeScript",
+    "Next.js",
+    "React",
+    "Express",
+    "Node.js",
+    "PostgreSQL",
+    "Prisma",
+    "Tailwind CSS",
+    "Firebase",
+    "Supabase",
+    "JWT",
+    "FCM"
+  ],
+  "features": [
+    {
+      "name": "Authentication - Customer Signup",
+      "description": "Register a new customer user with email/phone and password",
+      "files": ["backend/src/routes/authRoutes.ts", "backend/src/controllers/authPasswordController.ts"],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "info": {
+          "title": "Customer Signup API",
+          "version": "1.0.0"
+        },
+        "paths": {
+          "/api/auth/signup": {
+            "post": {
+              "summary": "Register a new customer user",
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "name": {"type": "string"},
+                        "email": {"type": "string", "format": "email"},
+                        "phone": {"type": "string"},
+                        "password": {"type": "string", "minLength": 6}
+                      },
+                      "required": ["password"]
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {
+                  "description": "Success",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "success": {"type": "boolean"},
+                          "user": {"type": "object"},
+                          "token": {"type": "string"}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Authentication - Customer Login",
+      "description": "Authenticate customer user with email/phone and password",
+      "files": ["backend/src/routes/authRoutes.ts", "backend/src/controllers/authPasswordController.ts"],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "paths": {
+          "/api/auth/login": {
+            "post": {
+              "summary": "Customer login",
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "identifier": {"type": "string"},
+                        "password": {"type": "string"}
+                      },
+                      "required": ["identifier", "password"]
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {
+                  "description": "Success",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "success": {"type": "boolean"},
+                          "user": {"type": "object"},
+                          "token": {"type": "string"}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Authentication - Admin Login",
+      "description": "Authenticate admin user with username and password",
+      "files": ["backend/src/routes/authRoutes.ts", "backend/src/controllers/authPasswordController.ts"],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "paths": {
+          "/api/auth/admin/login": {
+            "post": {
+              "summary": "Admin login",
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "username": {"type": "string"},
+                        "password": {"type": "string"}
+                      },
+                      "required": ["username", "password"]
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {
+                  "description": "Success",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "success": {"type": "boolean"},
+                          "admin": {"type": "object"},
+                          "token": {"type": "string"}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Authentication - Get Current User",
+      "description": "Get current authenticated user information",
+      "files": ["backend/src/routes/authRoutes.ts", "backend/src/controllers/authController.ts"],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "paths": {
+          "/api/auth/me": {
+            "get": {
+              "summary": "Get current user",
+              "security": [{"bearerAuth": []}],
+              "responses": {
+                "200": {
+                  "description": "Success",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "user": {
+                            "type": "object",
+                            "properties": {
+                              "id": {"type": "string"},
+                              "name": {"type": "string"},
+                              "email": {"type": "string"},
+                              "phone": {"type": "string"},
+                              "profilePic": {"type": "string"},
+                              "phoneVerified": {"type": "boolean"}
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Products - List Products",
+      "description": "Get all products with pagination and filters (public route)",
+      "files": ["backend/src/routes/products.ts", "backend/src/controllers/productController.ts"],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "paths": {
+          "/api/products": {
+            "get": {
+              "summary": "List products",
+              "parameters": [
+                {"name": "page", "in": "query", "schema": {"type": "integer", "minimum": 1}},
+                {"name": "limit", "in": "query", "schema": {"type": "integer", "minimum": 1, "maximum": 100}},
+                {"name": "category", "in": "query", "schema": {"type": "string"}},
+                {"name": "search", "in": "query", "schema": {"type": "string"}},
+                {"name": "in_stock", "in": "query", "schema": {"type": "string", "enum": ["true", "false", "1", "0"]}}
+              ],
+              "responses": {
+                "200": {
+                  "description": "Success"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Products - Get Product by ID",
+      "description": "Get single product by ID (public route)",
+      "files": ["backend/src/routes/products.ts", "backend/src/controllers/productController.ts"],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "paths": {
+          "/api/products/{id}": {
+            "get": {
+              "summary": "Get product by ID",
+              "parameters": [
+                {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+              ],
+              "responses": {
+                "200": {
+                  "description": "Success"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Products - Create Product",
+      "description": "Create new product (admin only)",
+      "files": ["backend/src/routes/products.ts", "backend/src/controllers/productController.ts"],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "paths": {
+          "/api/admin/products": {
+            "post": {
+              "summary": "Create product",
+              "security": [{"bearerAuth": []}],
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "name": {"type": "string", "minLength": 1, "maxLength": 200},
+                        "description": {"type": "string", "maxLength": 1000},
+                        "category": {"type": "string", "minLength": 1, "maxLength": 100},
+                        "price": {"type": "integer", "minimum": 0},
+                        "unitType": {"type": "string", "minLength": 1, "maxLength": 50},
+                        "unitValue": {"type": "number", "minimum": 0.01},
+                        "stockQty": {"type": "number", "minimum": 0},
+                        "imageUrl": {"type": "string", "format": "uri", "maxLength": 500},
+                        "isActive": {"type": "boolean"}
+                      },
+                      "required": ["name", "category", "price", "unitType", "unitValue"]
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {
+                  "description": "Success"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Products - Update Product",
+      "description": "Update product (admin only)",
+      "files": ["backend/src/routes/products.ts", "backend/src/controllers/productController.ts"],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "paths": {
+          "/api/admin/products/{id}": {
+            "put": {
+              "summary": "Update product",
+              "security": [{"bearerAuth": []}],
+              "parameters": [
+                {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+              ],
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "name": {"type": "string"},
+                        "description": {"type": "string"},
+                        "category": {"type": "string"},
+                        "price": {"type": "integer"},
+                        "unitType": {"type": "string"},
+                        "unitValue": {"type": "number"},
+                        "stockQty": {"type": "number"},
+                        "imageUrl": {"type": "string"},
+                        "isActive": {"type": "boolean"}
+                      }
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {
+                  "description": "Success"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Products - Update Product Stock",
+      "description": "Update product stock quantity only (admin only)",
+      "files": ["backend/src/routes/products.ts", "backend/src/controllers/productController.ts"],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "paths": {
+          "/api/admin/products/{id}/stock": {
+            "patch": {
+              "summary": "Update product stock",
+              "security": [{"bearerAuth": []}],
+              "parameters": [
+                {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+              ],
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "stockQty": {"type": "number", "minimum": 0}
+                      },
+                      "required": ["stockQty"]
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {
+                  "description": "Success"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Orders - Create Order",
+      "description": "Create new order (user auth required)",
+      "files": ["backend/src/routes/orders.ts", "backend/src/controllers/orderController.ts"],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "paths": {
+          "/api/orders": {
+            "post": {
+              "summary": "Create order",
+              "security": [{"bearerAuth": []}],
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "productId": {"type": "string", "format": "uuid"},
+                              "qty": {"type": "number", "minimum": 0.01}
+                            },
+                            "required": ["productId", "qty"]
+                          },
+                          "minItems": 1
+                        },
+                        "addressId": {"type": "string", "format": "uuid"}
+                      },
+                      "required": ["items"]
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {
+                  "description": "Success"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Orders - Get User Orders",
+      "description": "Get user's own orders with pagination",
+      "files": ["backend/src/routes/orders.ts", "backend/src/controllers/orderController.ts"],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "paths": {
+          "/api/orders": {
+            "get": {
+              "summary": "Get user orders",
+              "security": [{"bearerAuth": []}],
+              "parameters": [
+                {"name": "page", "in": "query", "schema": {"type": "integer", "minimum": 1}},
+                {"name": "limit", "in": "query", "schema": {"type": "integer", "minimum": 1, "maximum": 100}}
+              ],
+              "responses": {
+                "200": {
+                  "description": "Success"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Orders - Get Order by ID",
+      "description": "Get order by ID (user can view own orders, admin can view any)",
+      "files": ["backend/src/routes/orders.ts", "backend/src/controllers/orderController.ts"],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "paths": {
+          "/api/orders/{id}": {
+            "get": {
+              "summary": "Get order by ID",
+              "security": [{"bearerAuth": []}],
+              "parameters": [
+                {"name": "id", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}
+              ],
+              "responses": {
+                "200": {
+                  "description": "Success"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Admin Orders - List Orders",
+      "description": "List orders with filters (admin only)",
+      "files": ["backend/src/routes/adminOrders.ts", "backend/src/controllers/adminOrderController.ts"],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "paths": {
+          "/api/admin/orders": {
+            "get": {
+              "summary": "List orders",
+              "security": [{"bearerAuth": []}],
+              "parameters": [
+                {"name": "page", "in": "query", "schema": {"type": "integer"}},
+                {"name": "limit", "in": "query", "schema": {"type": "integer"}},
+                {"name": "status", "in": "query", "schema": {"type": "string", "enum": ["pending", "confirmed", "preparing", "out_for_delivery", "delivered", "cancelled"]}},
+                {"name": "search", "in": "query", "schema": {"type": "string"}}
+              ],
+              "responses": {
+                "200": {
+                  "description": "Success"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Admin Orders - Update Order Status",
+      "description": "Update order status and optionally assign delivery boy (admin only)",
+      "files": ["backend/src/routes/adminOrders.ts", "backend/src/controllers/adminOrderController.ts"],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "paths": {
+          "/api/admin/orders/{id}/status": {
+            "patch": {
+              "summary": "Update order status",
+              "security": [{"bearerAuth": []}],
+              "parameters": [
+                {"name": "id", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}
+              ],
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "status": {"type": "string", "enum": ["confirmed", "preparing", "out_for_delivery", "delivered", "cancelled"]},
+                        "assignedDeliveryId": {"type": "string", "format": "uuid"}
+                      },
+                      "required": ["status"]
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {
+                  "description": "Success"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Admin Orders - Assign Delivery Boy",
+      "description": "Assign delivery boy to order (admin only)",
+      "files": ["backend/src/routes/adminOrders.ts", "backend/src/controllers/adminOrderController.ts"],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "paths": {
+          "/api/admin/orders/{id}/assign": {
+            "post": {
+              "summary": "Assign delivery boy",
+              "security": [{"bearerAuth": []}],
+              "parameters": [
+                {"name": "id", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}
+              ],
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "deliveryBoyId": {"type": "string", "format": "uuid"}
+                      },
+                      "required": ["deliveryBoyId"]
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {
+                  "description": "Success"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Admin Delivery - Get Delivery Boys",
+      "description": "Get list of active delivery boys (admin only)",
+      "files": ["backend/src/routes/adminDelivery.ts", "backend/src/controllers/adminOrderController.ts"],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "paths": {
+          "/api/admin/delivery-boys": {
+            "get": {
+              "summary": "Get delivery boys",
+              "security": [{"bearerAuth": []}],
+              "responses": {
+                "200": {
+                  "description": "Success"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Delivery - Login",
+      "description": "Login delivery boy by phone",
+      "files": ["backend/src/routes/delivery.ts", "backend/src/controllers/deliveryController.ts"],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "paths": {
+          "/api/delivery/login": {
+            "post": {
+              "summary": "Delivery login",
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "phone": {"type": "string"},
+                        "fcmToken": {"type": "string"}
+                      },
+                      "required": ["phone"]
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {
+                  "description": "Success"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Delivery Orders - Get Orders",
+      "description": "Get orders assigned to delivery boy",
+      "files": ["backend/src/routes/deliveryOrders.ts", "backend/src/controllers/deliveryOrderController.ts"],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "paths": {
+          "/api/delivery/orders": {
+            "get": {
+              "summary": "Get delivery orders",
+              "security": [{"bearerAuth": []}],
+              "responses": {
+                "200": {
+                  "description": "Success"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Delivery Orders - Update Order Status",
+      "description": "Update order status (delivery boy can set picked, out_for_delivery, delivered)",
+      "files": ["backend/src/routes/deliveryOrders.ts", "backend/src/controllers/deliveryOrderController.ts"],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "paths": {
+          "/api/delivery/orders/{id}/status": {
+            "patch": {
+              "summary": "Update delivery order status",
+              "security": [{"bearerAuth": []}],
+              "parameters": [
+                {"name": "id", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}
+              ],
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "status": {"type": "string", "enum": ["picked", "out_for_delivery", "delivered"]},
+                        "paymentType": {"type": "string", "enum": ["cod", "qr"]}
+                      },
+                      "required": ["status"]
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {
+                  "description": "Success"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Delivery Summary - Get Summary",
+      "description": "Get delivery boy's summary statistics for today",
+      "files": ["backend/src/routes/deliverySummary.ts", "backend/src/controllers/deliverySummaryController.ts"],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "paths": {
+          "/api/delivery/summary": {
+            "get": {
+              "summary": "Get delivery summary",
+              "security": [{"bearerAuth": []}],
+              "responses": {
+                "200": {
+                  "description": "Success",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "deliveredOrdersCount": {"type": "integer"},
+                          "totalCOD": {"type": "integer"},
+                          "totalQR": {"type": "integer"},
+                          "distanceTravelled": {"type": "number"},
+                          "orders": {"type": "array"}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Admin Uploads - Upload Product Image",
+      "description": "Upload product image to Supabase Storage",
+      "files": ["backend/src/routes/adminUploads.ts", "backend/src/services/storageService.ts"],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "paths": {
+          "/api/admin/upload-product-image": {
+            "post": {
+              "summary": "Upload product image",
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "multipart/form-data": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "image": {"type": "string", "format": "binary"}
+                      },
+                      "required": ["image"]
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {
+                  "description": "Success",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "url": {"type": "string"}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "User - Update Phone",
+      "description": "Update user phone number",
+      "files": ["backend/src/routes/userRoutes.ts", "backend/src/controllers/userController.ts"],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "paths": {
+          "/api/user/phone": {
+            "post": {
+              "summary": "Update phone",
+              "security": [{"bearerAuth": []}],
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "phone": {"type": "string", "pattern": "^\\d{10}$"}
+                      },
+                      "required": ["phone"]
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {
+                  "description": "Success"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "User - Update Location",
+      "description": "Update user location (address)",
+      "files": ["backend/src/routes/userRoutes.ts", "backend/src/controllers/userController.ts"],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "paths": {
+          "/api/user/location": {
+            "post": {
+              "summary": "Update location",
+              "security": [{"bearerAuth": []}],
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "latitude": {"type": "number", "minimum": -90, "maximum": 90},
+                        "longitude": {"type": "number", "minimum": -180, "maximum": 180},
+                        "fullAddress": {"type": "string", "minLength": 1, "maxLength": 500},
+                        "city": {"type": "string", "minLength": 1, "maxLength": 100},
+                        "pincode": {"type": "string", "pattern": "^\\d{6}$"}
+                      },
+                      "required": ["latitude", "longitude", "fullAddress", "city", "pincode"]
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {
+                  "description": "Success"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "User - Get Default Address",
+      "description": "Get user's default address",
+      "files": ["backend/src/routes/userRoutes.ts", "backend/src/controllers/userController.ts"],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "paths": {
+          "/api/user/address": {
+            "get": {
+              "summary": "Get default address",
+              "security": [{"bearerAuth": []}],
+              "responses": {
+                "200": {
+                  "description": "Success"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "User - Update FCM Token",
+      "description": "Update user FCM token for push notifications",
+      "files": ["backend/src/routes/userRoutes.ts", "backend/src/controllers/userController.ts"],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "paths": {
+          "/api/user/fcm-token": {
+            "post": {
+              "summary": "Update FCM token",
+              "security": [{"bearerAuth": []}],
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "token": {"type": "string", "minLength": 1}
+                      },
+                      "required": ["token"]
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {
+                  "description": "Success"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Health Check",
+      "description": "Health check endpoint",
+      "files": ["backend/src/server.ts"],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "paths": {
+          "/health": {
+            "get": {
+              "summary": "Health check",
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "status": {"type": "string"}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
+

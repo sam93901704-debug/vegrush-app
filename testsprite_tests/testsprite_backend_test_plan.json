@@ -1,0 +1,52 @@
+[
+  {
+    "id": "TC001",
+    "title": "customer signup with valid data",
+    "description": "Verify that a new customer can successfully register using valid name, email, phone, and password with password meeting minimum length requirements."
+  },
+  {
+    "id": "TC002",
+    "title": "customer login with valid credentials",
+    "description": "Verify that a customer can login successfully using valid email or phone as identifier and correct password, and receives a valid authentication token."
+  },
+  {
+    "id": "TC003",
+    "title": "admin login with valid credentials",
+    "description": "Verify that an admin user can login successfully using valid username and password, and receives a valid authentication token."
+  },
+  {
+    "id": "TC004",
+    "title": "get current authenticated user",
+    "description": "Verify that the API returns the current authenticated user's information when a valid JWT token is provided in the request."
+  },
+  {
+    "id": "TC005",
+    "title": "list products with pagination and filters",
+    "description": "Verify that the product listing API returns products correctly with support for pagination, category filtering, search keyword filtering, and in_stock filter."
+  },
+  {
+    "id": "TC006",
+    "title": "get product by id",
+    "description": "Verify that the API returns the correct product details when queried with a valid product ID."
+  },
+  {
+    "id": "TC007",
+    "title": "create product with valid data",
+    "description": "Verify that an admin can create a new product successfully by providing all required fields with valid data and receives a success response."
+  },
+  {
+    "id": "TC008",
+    "title": "update product details",
+    "description": "Verify that an admin can update existing product details including name, description, category, price, unitType, unitValue, stockQty, imageUrl, and isActive status."
+  },
+  {
+    "id": "TC009",
+    "title": "update product stock quantity",
+    "description": "Verify that an admin can update only the stock quantity of a product by providing a valid product ID and new stock quantity."
+  },
+  {
+    "id": "TC010",
+    "title": "create order with valid items",
+    "description": "Verify that an authenticated user can create a new order by providing a valid list of product items with product IDs and quantities, and optionally an address ID."
+  }
+]

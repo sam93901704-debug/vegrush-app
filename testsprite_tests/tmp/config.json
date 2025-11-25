@@ -1,0 +1,19 @@
+{
+  "status": "commited",
+  "type": "backend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:4000",
+  "backendAuthType": "basic token",
+  "backendUsername": "sam93901704@gmail.com",
+  "backendPassword": "Sameer@123",
+  "executionArgs": {
+    "projectName": "your-app",
+    "projectPath": "D:\\your-app",
+    "testIds": [],
+    "additionalInstruction": "",
+    "envs": {
+      "API_KEY": "sk-user-KNPDPajUFEeSsIkPAIUc0slYD_DGipDf98W6H3jwrUwDbIhXHGmgy0xl78-tZhp-ssOi-eFGWs5M1okV5RnV2SCn54NRiw1eyPCYzNZoMuR5VdZXFPc7ceNCdngGuT-11xM"
+    }
+  },
+  "proxy": "http://668d0a90-e544-4237-82b5-5ce8e6a7f345:ubktJO6sV0fO70y4P3hafVBNZBUeFpZh@tun.testsprite.com:8080"
+}

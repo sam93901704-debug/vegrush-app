@@ -1,0 +1,528 @@
+[
+  {
+    "id": "TC001",
+    "title": "Customer Signup Success",
+    "description": "Test that a new customer can successfully sign up with a valid email, phone, and password meeting the minimum length requirements.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send POST request to /api/auth/signup with valid name, email, phone, and password (>=6 chars)."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify response status is 200 and success flag is true and a user object and JWT token are returned."
+      }
+    ]
+  },
+  {
+    "id": "TC002",
+    "title": "Customer Signup Failure - Password Too Short",
+    "description": "Test signup failure when password does not meet minimum length requirements.",
+    "category": "error handling",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send POST request to /api/auth/signup with a password shorter than 6 characters."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify response is an error with appropriate validation message and status code."
+      }
+    ]
+  },
+  {
+    "id": "TC003",
+    "title": "Customer Login Success with Email",
+    "description": "Test that customer can login with correct email and password.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send POST request to /api/auth/login with valid email and password."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify response status is 200 and contains success flag, user object, and JWT token."
+      }
+    ]
+  },
+  {
+    "id": "TC004",
+    "title": "Customer Login Failure - Incorrect Password",
+    "description": "Test login failure when password is incorrect.",
+    "category": "error handling",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send POST request to /api/auth/login with valid email but wrong password."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify response indicates authentication failure with proper error status."
+      }
+    ]
+  },
+  {
+    "id": "TC005",
+    "title": "Admin Login Success",
+    "description": "Test that admin user can login with correct username and password.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send POST request to /api/auth/admin/login with valid username and password."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify success response with admin user object and JWT token."
+      }
+    ]
+  },
+  {
+    "id": "TC006",
+    "title": "List Products with Pagination and Filters",
+    "description": "Test retrieving product list with pagination, category filter, stock status filter, and search query.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send GET request to /api/products?page=1&limit=10&category=vegetables&in_stock=true&search=tomato."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify response status 200, includes products matching filters, max 10 items, and pagination metadata."
+      }
+    ]
+  },
+  {
+    "id": "TC007",
+    "title": "Get Product by Valid ID",
+    "description": "Test retrieval of product details by valid product ID.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send GET request to /api/products/{valid_product_id}."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify response status 200 and product details including images, stock status, and price."
+      }
+    ]
+  },
+  {
+    "id": "TC008",
+    "title": "Get Product with Invalid ID",
+    "description": "Test error response when requesting product details with invalid or non-existent product ID.",
+    "category": "error handling",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send GET request to /api/products/{invalid_product_id}."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify response contains appropriate 404 or error code indicating product not found."
+      }
+    ]
+  },
+  {
+    "id": "TC009",
+    "title": "Admin Create Product Success",
+    "description": "Test that an admin can create a new product with all required fields including valid imageUrl and stock quantity.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send POST request to /api/admin/products with valid product details and admin JWT token."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify response status success and that the product is created with correct attributes."
+      }
+    ]
+  },
+  {
+    "id": "TC010",
+    "title": "Admin Create Product Failure - Missing Required Fields",
+    "description": "Test failure when admin attempts to create a product leaving out required fields like name or category.",
+    "category": "error handling",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send POST request to /api/admin/products missing required 'name' or 'category' fields with valid admin token."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify validation error is returned with proper status code."
+      }
+    ]
+  },
+  {
+    "id": "TC011",
+    "title": "Admin Update Product Successfully",
+    "description": "Test admin updating existing product fields including price, stockQty, and imageUrl.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send PUT request to /api/admin/products/{product_id} with modified product data and valid admin JWT token."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify response indicates success and product attributes are updated accordingly."
+      }
+    ]
+  },
+  {
+    "id": "TC012",
+    "title": "Admin Update Product Stock Only",
+    "description": "Test patch update to product stock quantity field only.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send PATCH request to /api/admin/products/{product_id}/stock with a new stockQty value and admin token."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify success response and stock quantity updated correctly."
+      }
+    ]
+  },
+  {
+    "id": "TC013",
+    "title": "Create Order Successfully",
+    "description": "Test a logged-in user can create an order with valid items and address id.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send POST request to /api/orders with valid items array (productId and qty) and addressId, authorized with user token."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify order is created successfully and response contains order details."
+      }
+    ]
+  },
+  {
+    "id": "TC014",
+    "title": "Create Order Failure - Empty Items List",
+    "description": "Test that order creation fails when the items list is empty or missing.",
+    "category": "error handling",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send POST request to /api/orders with empty or missing items array."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify validation error with appropriate status code is returned."
+      }
+    ]
+  },
+  {
+    "id": "TC015",
+    "title": "User Retrieve Own Orders with Pagination",
+    "description": "Test fetching logged-in user's own orders with pagination parameters.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send GET request to /api/orders?page=1&limit=10 authorized with user token."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify response contains a paginated list of user's orders."
+      }
+    ]
+  },
+  {
+    "id": "TC016",
+    "title": "Admin List Orders with Filters",
+    "description": "Test that admin can retrieve list of orders filtered by status and search query with pagination.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send GET request to /api/admin/orders?page=1&limit=20&status=confirmed&search=customerName with admin token."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify response contains filtered orders list with correct pagination."
+      }
+    ]
+  },
+  {
+    "id": "TC017",
+    "title": "Admin Update Order Status and Assign Delivery Boy",
+    "description": "Test admin can update order status and assign a delivery boy successfully.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send PATCH request to /api/admin/orders/{order_id}/status with new status and assignedDeliveryId using admin auth."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify order status is updated properly and delivery boy assigned."
+      }
+    ]
+  },
+  {
+    "id": "TC018",
+    "title": "Admin Assign Delivery Boy to Order",
+    "description": "Test admin assigning a delivery boy to an order explicitly.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send POST request to /api/admin/orders/{order_id}/assign with deliveryBoyId in body and admin token."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify success response and delivery boy is assigned to the order."
+      }
+    ]
+  },
+  {
+    "id": "TC019",
+    "title": "Delivery Boy Login Success",
+    "description": "Test delivery personnel can login successfully using phone number and optionally FCM token.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send POST request to /api/delivery/login with valid phone number and optional FCM token."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify success response with token and delivery user info."
+      }
+    ]
+  },
+  {
+    "id": "TC020",
+    "title": "Delivery Boy View Assigned Orders",
+    "description": "Test delivery boy can fetch list of assigned orders after login.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send GET request to /api/delivery/orders with valid delivery boy token."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify response contains all orders assigned to this delivery boy."
+      }
+    ]
+  },
+  {
+    "id": "TC021",
+    "title": "Delivery Boy Update Order Status Valid Transitions",
+    "description": "Test delivery boy can update order status to picked, out_for_delivery, and delivered in correct sequence.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send PATCH request to /api/delivery/orders/{order_id}/status with status 'picked' and valid token."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify success response and order status updated."
+      },
+      {
+        "type": "action",
+        "description": "Send PATCH request to same endpoint with status 'out_for_delivery'."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify success response and status updated."
+      },
+      {
+        "type": "action",
+        "description": "Send PATCH request with status 'delivered' and paymentType set to either 'cod' or 'qr'."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify final success and order marked delivered with payment recorded."
+      }
+    ]
+  },
+  {
+    "id": "TC022",
+    "title": "Delivery Boy Update Order Status Invalid Transition",
+    "description": "Test system rejects invalid or out-of-order status updates by delivery boy.",
+    "category": "error handling",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Attempt to update order status from 'pending' directly to 'delivered' without prior statuses."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify error response indicating invalid status transition."
+      }
+    ]
+  },
+  {
+    "id": "TC023",
+    "title": "Admin Upload Product Image",
+    "description": "Test admin can upload a product image file successfully and receive a valid URL in response.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send POST request to /api/admin/upload-product-image with multipart/form-data containing valid image file and admin token."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify response contains a URL string for the uploaded image."
+      }
+    ]
+  },
+  {
+    "id": "TC024",
+    "title": "User Update Phone Number Successfully",
+    "description": "Test logged-in user can update their phone number to a valid 10-digit value.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send POST request to /api/user/phone with valid 10-digit phone number and user token."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify success response indicating phone updated."
+      }
+    ]
+  },
+  {
+    "id": "TC025",
+    "title": "User Update Phone Number Failure Invalid Format",
+    "description": "Test failure when trying to update phone with an invalid format (not 10 digits).",
+    "category": "error handling",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send POST request to /api/user/phone with incorrectly formatted phone number."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify validation error response."
+      }
+    ]
+  },
+  {
+    "id": "TC026",
+    "title": "User Update Location Successfully",
+    "description": "Test user can update location with valid latitude, longitude, full address, city, and pincode.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send POST request to /api/user/location with all required fields valid and authorized."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify success response indicating location saved."
+      }
+    ]
+  },
+  {
+    "id": "TC027",
+    "title": "User Update Location Failure - Invalid Pincode",
+    "description": "Test failure when user submits update location with pincode not matching six digit pattern.",
+    "category": "error handling",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send POST request to /api/user/location with invalid pincode format."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify validation error is returned."
+      }
+    ]
+  },
+  {
+    "id": "TC028",
+    "title": "User Get Default Address",
+    "description": "Test user can retrieve their default saved address successfully.",
+    "category": "functional",
+    "priority": "Low",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send GET request to /api/user/address with valid user token."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify response contains default address details."
+      }
+    ]
+  },
+  {
+    "id": "TC029",
+    "title": "User Update FCM Token",
+    "description": "Test user can update their push notification FCM token for receiving notifications.",
+    "category": "functional",
+    "priority": "Low",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send POST request to /api/user/fcm-token with valid non-empty token string and authorization."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify success response confirming FCM token updated."
+      }
+    ]
+  },
+  {
+    "id": "TC030",
+    "title": "Health Check Endpoint",
+    "description": "Test server health check endpoint returns status OK.",
+    "category": "functional",
+    "priority": "Low",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Send GET request to /health."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify response status 200 and body contains { \"status\": \"ok\" } or equivalent."
+      }
+    ]
+  }
+]
