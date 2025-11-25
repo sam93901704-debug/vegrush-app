@@ -9,7 +9,9 @@ export default function AdminOrdersList() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['admin-orders'],
     queryFn: async () => {
-      return await apiFetch('/api/admin/orders?limit=50');
+      const response = await apiFetch('/api/admin/orders?limit=50');
+      if (!response.ok) throw new Error('Failed to fetch orders');
+      return await response.json();
     },
   });
 

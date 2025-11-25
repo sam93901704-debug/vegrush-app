@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useProduct, useUpdateProduct } from '../../../hooks/useProducts';
-import { apiFetch } from '../../../utils/apiFetch';
+import { useProduct, useUpdateProduct } from '@/hooks/useProducts';
+import { apiFetch } from '@/utils/apiFetch';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 

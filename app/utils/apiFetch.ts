@@ -23,7 +23,8 @@ export async function apiFetch(
   }
 
   // Set Content-Type if body is provided and not already set
-  if (options.body && !headers.has('Content-Type')) {
+  // Don't set Content-Type for FormData - browser will set it with boundary
+  if (options.body && !headers.has('Content-Type') && !(options.body instanceof FormData)) {
     headers.set('Content-Type', 'application/json');
   }
 
